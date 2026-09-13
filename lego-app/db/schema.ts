@@ -1,0 +1,298 @@
+﻿import {
+  pgTable,
+  pgEnum,
+  uuid,
+  text,
+  integer,
+  boolean,
+  date,
+  timestamp,
+  smallint,
+  jsonb,
+  unique,
+  check,
+} from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+
+// ── 1. ENUMS ──────────────────────────────────────────────
+export const userRoleEnum = pgEnum("user_role", ["learner", "tutor", "admin"]);
+export const lessonStatusEnum = pgEnum("lesson_status", ["locked", "in_progress", "completed"]);
+export const badgeCriteriaEnum = pgEnum("badge_criteria_type", [
+  "first_lesson",
+  "lessons_completed",
+  "course_complete",
+  "streak_days",
+  "xp_earned",
+]);
+export const friendshipStatusEnum = pgEnum("friendship_status", [
+  "pending",
+  "accepted",
+  "rejected",
+  "blocked",
+]);
+export const sessionStatusEnum = pgEnum("session_status", [
+  "requested",
+  "confirmed",
+  "declined",
+  "cancelled",
+  "completed",
+]);
+
+// ── 2. PROFILES (Extends Supabase auth.users) ─────────────
+export const profiles = pgTable("profiles", {
+  id: uuid("id").primaryKey(),
+  role: userRoleEnum("role").notNull().default("learner"),
+  displayName: text("display_name"),
+  avatarUrl: text("avatar_url"),
+  xp: integer("xp").notNull().default(0),
+  streakCount: integer("streak_count").notNull().default(0),
+  lastActiveDate: date("last_active_date"),
+  onboardingDone: boolean("onboarding_done").notNull().default(false),
+  dailyGoalMinutes: integer("daily_goal_minutes").notNull().default(15),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 3. COURSES ────────────────────────────────────────────
+export const courses = pgTable("courses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  description: text("description"),
+  coverUrl: text("cover_url"),
+  isPublished: boolean("is_published").notNull().default(false),
+  createdBy: uuid("created_by").references(() => profiles.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 4. UNITS ──────────────────────────────────────────────
+export const units = pgTable(
+  "units",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    courseId: uuid("course_id")
+      .notNull()
+      .references(() => courses.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    orderIndex: integer("order_index").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.courseId, t.orderIndex)]
+);
+
+// ── 5. LESSONS ────────────────────────────────────────────
+export const lessons = pgTable(
+  "lessons",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    unitId: uuid("unit_id")
+      .notNull()
+      .references(() => units.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description"),
+    youtubeVideoId: text("youtube_video_id").notNull(),
+    orderIndex: integer("order_index").notNull().default(0),
+    xpReward: integer("xp_reward").notNull().default(10),
+    isPublished: boolean("is_published").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.unitId, t.orderIndex)]
+);
+
+// ── 6. CHALLENGES ─────────────────────────────────────────
+export const challenges = pgTable("challenges", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  lessonId: uuid("lesson_id")
+    .notNull()
+    .references(() => lessons.id, { onDelete: "cascade" }),
+  questionText: text("question_text").notNull(),
+  points: integer("points").notNull().default(1),
+  orderIndex: integer("order_index").notNull().default(0),
+  isPublished: boolean("is_published").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 7. CHALLENGE_OPTIONS ──────────────────────────────────
+export const challengeOptions = pgTable("challenge_options", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  challengeId: uuid("challenge_id")
+    .notNull()
+    .references(() => challenges.id, { onDelete: "cascade" }),
+  optionText: text("option_text").notNull(),
+  isCorrect: boolean("is_correct").notNull().default(false),
+  orderIndex: integer("order_index").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 8. ENROLLMENTS ────────────────────────────────────────
+export const enrollments = pgTable(
+  "enrollments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    courseId: uuid("course_id")
+      .notNull()
+      .references(() => courses.id, { onDelete: "cascade" }),
+    isActive: boolean("is_active").notNull().default(true),
+    enrolledAt: timestamp("enrolled_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.userId, t.courseId)]
+);
+
+// ── 9. USER_PROGRESS ──────────────────────────────────────
+export const userProgress = pgTable(
+  "user_progress",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    lessonId: uuid("lesson_id")
+      .notNull()
+      .references(() => lessons.id, { onDelete: "cascade" }),
+    status: lessonStatusEnum("status").notNull().default("locked"),
+    score: integer("score"),
+    attempts: integer("attempts").notNull().default(0),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.userId, t.lessonId)]
+);
+
+// ── 10. BADGES ────────────────────────────────────────────
+export const badges = pgTable("badges", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull().unique(),
+  description: text("description"),
+  iconUrl: text("icon_url"),
+  criteriaType: badgeCriteriaEnum("criteria_type").notNull(),
+  criteriaValue: integer("criteria_value").notNull().default(1),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 11. USER_BADGES ───────────────────────────────────────
+export const userBadges = pgTable(
+  "user_badges",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    badgeId: uuid("badge_id")
+      .notNull()
+      .references(() => badges.id, { onDelete: "cascade" }),
+    awardedAt: timestamp("awarded_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.userId, t.badgeId)]
+);
+
+// ── 12. DAILY_ACTIVITY_LOG ────────────────────────────────
+export const dailyActivityLog = pgTable(
+  "daily_activity_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    activityDate: date("activity_date").notNull().default(sql`CURRENT_DATE`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.userId, t.activityDate)]
+);
+
+// ── 13. FRIENDSHIPS ───────────────────────────────────────
+export const friendships = pgTable(
+  "friendships",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    requesterId: uuid("requester_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    addresseeId: uuid("addressee_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    status: friendshipStatusEnum("status").notNull().default("pending"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.requesterId, t.addresseeId)]
+);
+
+// ── 14. FRIEND_STREAKS ────────────────────────────────────
+export const friendStreaks = pgTable("friend_streaks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  friendshipId: uuid("friendship_id")
+    .notNull()
+    .unique()
+    .references(() => friendships.id, { onDelete: "cascade" }),
+  streakCount: integer("streak_count").notNull().default(0),
+  lastSharedDate: date("last_shared_date"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 15. TUTOR_AVAILABILITY ────────────────────────────────
+export const tutorAvailability = pgTable("tutor_availability", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tutorId: uuid("tutor_id")
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" }),
+  dayOfWeek: smallint("day_of_week").notNull(),
+  startTime: text("start_time").notNull(),
+  endTime: text("end_time").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 16. TUTOR_SESSIONS ────────────────────────────────────
+export const tutorSessions = pgTable("tutor_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  learnerId: uuid("learner_id")
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" }),
+  tutorId: uuid("tutor_id")
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" }),
+  courseId: uuid("course_id").references(() => courses.id, { onDelete: "set null" }),
+  scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+  durationMins: integer("duration_mins").notNull().default(60),
+  status: sessionStatusEnum("status").notNull().default("requested"),
+  jitsiRoomId: text("jitsi_room_id"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 17. LIBRARY_VIEWS ─────────────────────────────────────
+export const libraryViews = pgTable("library_views", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" }),
+  lessonId: uuid("lesson_id")
+    .notNull()
+    .references(() => lessons.id, { onDelete: "cascade" }),
+  viewedAt: timestamp("viewed_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 18. AI_INTERACTIONS ───────────────────────────────────
+export const aiInteractions = pgTable("ai_interactions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  lessonId: uuid("lesson_id").references(() => lessons.id, { onDelete: "set null" }),
+  triggeredBy: uuid("triggered_by").references(() => profiles.id, { onDelete: "set null" }),
+  provider: text("provider").notNull(),
+  prompt: text("prompt").notNull(),
+  response: jsonb("response"),
+  latencyMs: integer("latency_ms"),
+  success: boolean("success").notNull().default(false),
+  errorMsg: text("error_msg"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

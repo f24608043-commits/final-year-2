@@ -4,6 +4,7 @@
 > - **Phase 0 (Foundation & Connection):** 100% COMPLETE & VERIFIED LIVE
 > - **Phase 1 (Database Schema & RLS Matrix):** 100% COMPLETE & VERIFIED LIVE
 > - **Phase 2 (Onboarding & Course/Path Structure):** 100% COMPLETE & VERIFIED LIVE
+> - **Phase 3 (Lesson Flow, Server-Side Grading, & Tamper-Proofing):** 100% COMPLETE & VERIFIED LIVE
 
 ---
 
@@ -72,9 +73,9 @@ All 17 tables from Section 5 of the SRS are active in the `public` schema with R
 
 ## 4. Phase 2: Onboarding & Course/Path Structure
 
-### 4.1 Seeded Course Data (`scripts/seed.ts`)
-The seed script populates a real course with genuine educational YouTube videos:
-- **Course:** "Python Programming"
+### 4.1 Seeded Course Data (`scripts/seed.ts` & `scripts/seed_all_quizzes.ts`)
+The seed scripts populate a real course with genuine educational YouTube videos and hand-written gating quizzes:
+- **Course:** "Python Programming" (`is_published: true`)
   - **Unit 1: Python Fundamentals**
     - Lesson 1: "Introduction to Python" (YouTube ID: `kqtD5dpn9C8`, 10 XP)
     - Lesson 2: "Variables & Data Types" (YouTube ID: `cKxRvEZd3Mw`, 15 XP)
@@ -83,7 +84,6 @@ The seed script populates a real course with genuine educational YouTube videos:
     - Lesson 4: "Working with Lists" (YouTube ID: `W8KRzm-HUcc`, 20 XP)
     - Lesson 5: "Defining Functions" (YouTube ID: `u-OmVr_fTKA`, 25 XP)
     - Lesson 6: "Building Your First Script" (YouTube ID: `_uQrJ0TkZlc`, 30 XP)
-- Includes seed challenges and multiple-choice options for Lesson 1 quiz gating.
 
 ### 4.2 Onboarding Wizard (`/onboarding`)
 - **Gating:** Users with `profiles.onboarding_done = true` are immediately redirected to `/path`.
@@ -94,68 +94,94 @@ The seed script populates a real course with genuine educational YouTube videos:
 
 ### 4.3 Path Progression Screen (`/path`)
 - **Gating:** Unauthenticated users redirect to `/sign-in`. Incomplete onboarding redirects to `/onboarding`.
-- **Deterministic State Engine:** Evaluates real database progress:
+- **Deterministic State Engine:** Driven entirely by real DB queries against `user_progress`:
   - Lessons with `user_progress.status = 'completed'` render as `completed` (✓).
   - The first uncompleted lesson renders as `current` (▶, active level).
   - All subsequent lessons render as `locked` (🔒).
   - Fresh signups with zero progress rows see Lesson 1 as `current` and Lessons 2–6 as `locked`.
 
-### 4.4 Live Phase 2 Verification (`scripts/test_phase2_flow.ts`)
+---
+
+## 5. Phase 3: Lesson Flow, Server-Side Grading & Tamper-Proofing
+
+### 5.1 Gated Lesson Experience (`/lesson/[lessonId]`)
+- **Server Gating:** Verifies user authentication, onboarding completion, and lesson accessibility. Jumping ahead to locked lessons redirects to `/path` with a security alert.
+- **Client Security:** `is_correct` boolean indicators are stripped on the server and **never sent to the client**, preventing DOM/state inspection cheats.
+- **Stage Progression:**
+  1. **Watch Stage:** Embedded responsive YouTube player with lesson brief and an "I've Finished Watching — Take Quiz" gate button.
+  2. **Quiz Stage:** Interactive multi-choice challenge interface.
+  3. **Result Stage:** Displays dynamically graded score, XP awarded, and newly unlocked badges.
+
+### 5.2 Server Action (`app/lesson/actions.ts: submitQuiz`)
+- Complies strictly with **FR3.3 & FR3.4**:
+  - Completely ignores any client-supplied scores.
+  - Queries `challenges` and `challenge_options` from database to grade answers server-side.
+  - Passing threshold (>= 50%):
+    - Sets `user_progress.status = 'completed'`.
+    - Updates `profiles.xp` with `lesson.xp_reward`.
+    - Logs daily activity and updates `streak_count`.
+    - Automatically evaluates and awards eligible badges (`first_lesson`, `lessons_completed`).
+  - Failing attempt:
+    - Sets `user_progress.status = 'in_progress'` and logs attempts.
+
+### 5.3 Live Tamper-Proof Verification (`scripts/test_phase3_manipulation.ts`)
 ```text
 ==================================================================
-TEST 1: Sign up brand new test account via Supabase Auth
-User registered in auth.users: ID = d7306291-9142-494b-abb9-f6fac838d480
-Auto-created profile in public.profiles: onboarding_done = false
+PHASE 3 TEST 1: Registering learner & completing onboarding
+✅ Registered User: tamper_test_1789324296274@lego.app
+✅ Learner enrolled in 'Python Programming' and onboarding completed.
+Initial state: Lesson 1 is current/unlocked; Lesson 2 is locked.
 
 ==================================================================
-TEST 2: Attempting /path BEFORE onboarding
-Checking profile.onboarding_done = false
-✅ PROOF: /path gates user and redirects to /onboarding (onboarding_done = false)
+PHASE 3 TEST 2: MANIPULATED SCORE ATTACK (FR3.3 Test)
+Attacker submits WRONG answers, but injects fake clientScore = 100 in payload.
+Attack result returned by server: {
+  passed: false,
+  realCalculatedScore: 0,
+  fakeClientScoreIgnored: 100,
+  correctCount: 0,
+  totalCount: 2
+}
+DB state after manipulated submission:
+   user_progress: status = 'in_progress', score = 0% (Expected: 0%)
+   profile: xp = 0 (Expected: 0 XP)
+✅ PROOF: Manipulated score was COMPLETELY REJECTED. Graded strictly by server!
 
 ==================================================================
-TEST 3: Completing Onboarding Wizard
-Enrolling in Course: "Python Programming" (6c4feca3-96f2-404e-a468-5cd74b9b4da7)
-✅ Enrollment row created in DB: is_active = true, placement_answer = 'beginner'
-✅ Profile updated to onboarding_done = true, daily_goal_minutes = 30
+PHASE 3 TEST 3: LEGITIMATE PASSING SUBMISSION
+Passing submission result: {
+  passed: true,
+  realCalculatedScore: 100,
+  fakeClientScoreIgnored: undefined,
+  correctCount: 2,
+  totalCount: 2
+}
+DB state after passing submission:
+   user_progress: status = 'completed', score = 100%
+   profile: xp = 10 (+10 XP awarded)
+   badges awarded: [ 'First Step' ]
+✅ PROOF: Lesson 1 passed and marked 'completed', XP awarded, First Step badge awarded!
 
 ==================================================================
-TEST 4: Re-visiting /onboarding AFTER completion
-Checking profile.onboarding_done = true
-✅ PROOF: Re-visiting /onboarding redirects straight to /path (wizard skipped)
+PHASE 3 TEST 4: VERIFYING DYNAMIC UNLOCK OF NEXT LEVEL (Lesson 2)
+Current /path progression chain:
+   Node 1 [✓ COMPLETED]: "Introduction to Python"
+   Node 2 [▶ CURRENT]: "Variables & Data Types"
+   Node 3 [🔒 LOCKED]: "Conditionals & Logic"
+   Node 4 [🔒 LOCKED]: "Working with Lists"
+   Node 5 [🔒 LOCKED]: "Defining Functions"
+   Node 6 [🔒 LOCKED]: "Building Your First Script"
+✅ PROOF: Lesson 1 completed -> Lesson 2 automatically unlocked as current!
 
-==================================================================
-TEST 5: Computing /path progression state for brand new user
-User progress rows in DB: 0 (brand new learner)
-Computed /path chain from real database queries:
-   Level 1: ▶ [CURRENT]     "Introduction to Python" (Python Fundamentals, +10 XP)
-   Level 2: 🔒 [LOCKED]     "Variables & Data Types" (Python Fundamentals, +15 XP)
-   Level 3: 🔒 [LOCKED]     "Conditionals & Logic" (Python Fundamentals, +20 XP)
-   Level 4: 🔒 [LOCKED]     "Working with Lists" (Data Structures & Functions, +20 XP)
-   Level 5: 🔒 [LOCKED]     "Defining Functions" (Data Structures & Functions, +25 XP)
-   Level 6: 🔒 [LOCKED]     "Building Your First Script" (Data Structures & Functions, +30 XP)
-✅ PROOF: Lesson 1 is unlocked/current; Lessons 2-6 are strictly locked!
-
-==================================================================
-TEST 6: Simulating Lesson 1 completion -> dynamic unlock of Lesson 2
-Updated /path chain after completing Lesson 1:
-   Level 1: ✓ [COMPLETED]   "Introduction to Python"
-   Level 2: ▶ [CURRENT]     "Variables & Data Types"
-   Level 3: 🔒 [LOCKED]     "Conditionals & Logic"
-   Level 4: 🔒 [LOCKED]     "Working with Lists"
-   Level 5: 🔒 [LOCKED]     "Defining Functions"
-   Level 6: 🔒 [LOCKED]     "Building Your First Script"
-✅ PROOF: Lesson 1 is completed; Lesson 2 automatically unlocked as current; Lessons 3-6 remain locked!
-
-🎉 ALL PHASE 2 EXIT CRITERIA MET AND FULLY VERIFIED WITH LIVE DATABASE QUERIES!
+🎉 ALL PHASE 3 EXIT CRITERIA MET AND VERIFIED LIVE!
 ```
 
 ---
 
-## 5. Upcoming Phases Roadmap
+## 6. Next Steps (Upcoming Phases)
 
-- **Phase 3:** Lesson Flow (`/lesson/[id]` video player, "watched" gating, quiz UI, server-side grading, XP reward, score manipulation test)
-- **Phase 4:** AI Quiz Generation (Groq primary, OpenRouter fallback, Zod schema validation, audit logging)
-- **Phase 5:** Gamification Engine (Personal streaks, badge criteria evaluation)
+- **Phase 4:** AI Quiz Generation (Groq primary, OpenRouter fallback, Zod schema validation, audit logging to `ai_interactions`)
+- **Phase 5:** Gamification Engine (Personal streaks & badge criteria engine)
 - **Phase 6:** Social Layer (Friend requests, mutual friend streaks, XP leaderboard)
 - **Phase 7:** Library & Tutor Booking (Ungated viewer + Tutor schedule & Jitsi Meet)
 - **Phase 8:** Admin Content Management

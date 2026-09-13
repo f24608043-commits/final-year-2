@@ -1,0 +1,264 @@
+﻿"use server";
+
+import { createClient } from "@/utils/supabase/server";
+import { db } from "@/db";
+import {
+  badges,
+  challengeOptions,
+  challenges,
+  dailyActivityLog,
+  lessons,
+  profiles,
+  userBadges,
+  userProgress,
+} from "@/db/schema";
+import { and, count, eq, inArray, sql } from "drizzle-orm";
+
+export interface QuizSubmissionResult {
+  success: boolean;
+  passed: boolean;
+  score: number;
+  totalQuestions: number;
+  correctCount: number;
+  xpAwarded: number;
+  badgesAwarded: string[];
+  message?: string;
+}
+
+export async function submitQuiz(
+  lessonId: string,
+  userAnswers: Record<string, string>,
+  // Client-submitted score parameter to test tamper-resistance (MUST BE IGNORED)
+  _clientSuppliedScore?: number
+): Promise<QuizSubmissionResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // 1. Fetch lesson details
+  const [lesson] = await db
+    .select()
+    .from(lessons)
+    .where(eq(lessons.id, lessonId))
+    .limit(1);
+
+  if (!lesson) {
+    throw new Error("Lesson not found");
+  }
+
+  // 2. Fetch challenges for this lesson from database
+  const lessonChallenges = await db
+    .select()
+    .from(challenges)
+    .where(and(eq(challenges.lessonId, lessonId), eq(challenges.isPublished, true)));
+
+  if (lessonChallenges.length === 0) {
+    throw new Error("No quiz questions found for this lesson");
+  }
+
+  const challengeIds = lessonChallenges.map((c) => c.id);
+
+  // 3. Fetch challenge options from database (source of truth for correct answers)
+  const options = await db
+    .select()
+    .from(challengeOptions)
+    .where(inArray(challengeOptions.challengeId, challengeIds));
+
+  // 4. Grade server-side (FR3.3: client score is completely ignored)
+  let totalPoints = 0;
+  let earnedPoints = 0;
+  let correctCount = 0;
+
+  for (const challenge of lessonChallenges) {
+    totalPoints += challenge.points;
+    const selectedOptionId = userAnswers[challenge.id];
+
+    if (selectedOptionId) {
+      const option = options.find(
+        (o) => o.id === selectedOptionId && o.challengeId === challenge.id
+      );
+
+      if (option && option.isCorrect) {
+        earnedPoints += challenge.points;
+        correctCount++;
+      }
+    }
+  }
+
+  const calculatedPercentage = totalPoints > 0
+    ? Math.round((earnedPoints / totalPoints) * 100)
+    : 0;
+
+  const passed = calculatedPercentage >= 50;
+  const badgesAwarded: string[] = [];
+
+  // 5. Update user_progress
+  const [existingProgress] = await db
+    .select()
+    .from(userProgress)
+    .where(and(eq(userProgress.userId, user.id), eq(userProgress.lessonId, lessonId)))
+    .limit(1);
+
+  const newAttempts = (existingProgress?.attempts || 0) + 1;
+
+  if (passed) {
+    await db
+      .insert(userProgress)
+      .values({
+        userId: user.id,
+        lessonId,
+        status: "completed",
+        score: calculatedPercentage,
+        attempts: newAttempts,
+        completedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: [userProgress.userId, userProgress.lessonId],
+        set: {
+          status: "completed",
+          score: calculatedPercentage,
+          attempts: newAttempts,
+          completedAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+
+    // 6. Award XP and update streak in profiles
+    const [profile] = await db
+      .select()
+      .from(profiles)
+      .where(eq(profiles.id, user.id))
+      .limit(1);
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    let newStreak = profile?.streakCount || 0;
+
+    if (profile) {
+      if (!profile.lastActiveDate) {
+        newStreak = 1;
+      } else {
+        const lastActive = new Date(profile.lastActiveDate);
+        const today = new Date(todayStr);
+        const diffDays = Math.floor(
+          (today.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (diffDays === 1) {
+          newStreak += 1;
+        } else if (diffDays > 1) {
+          newStreak = 1;
+        }
+      }
+
+      await db
+        .update(profiles)
+        .set({
+          xp: (profile.xp || 0) + lesson.xpReward,
+          streakCount: newStreak,
+          lastActiveDate: todayStr,
+          updatedAt: new Date(),
+        })
+        .where(eq(profiles.id, user.id));
+    }
+
+    // 7. Insert daily activity log
+    await db
+      .insert(dailyActivityLog)
+      .values({
+        userId: user.id,
+        activityDate: todayStr,
+      })
+      .onConflictDoNothing();
+
+    // 8. Check and award badges
+    // a. "First Step" (first_lesson)
+    const [firstStepBadge] = await db
+      .select()
+      .from(badges)
+      .where(eq(badges.criteriaType, "first_lesson"))
+      .limit(1);
+
+    if (firstStepBadge) {
+      const inserted = await db
+        .insert(userBadges)
+        .values({
+          userId: user.id,
+          badgeId: firstStepBadge.id,
+        })
+        .onConflictDoNothing()
+        .returning();
+
+      if (inserted.length > 0) {
+        badgesAwarded.push(firstStepBadge.name);
+      }
+    }
+
+    // b. "Level Up" (10 lessons completed)
+    const [lessonsCompletedBadge] = await db
+      .select()
+      .from(badges)
+      .where(eq(badges.criteriaType, "lessons_completed"))
+      .limit(1);
+
+    if (lessonsCompletedBadge) {
+      const [{ count: completedCount }] = await db
+        .select({ count: count() })
+        .from(userProgress)
+        .where(
+          and(
+            eq(userProgress.userId, user.id),
+            eq(userProgress.status, "completed")
+          )
+        );
+
+      if (completedCount >= lessonsCompletedBadge.criteriaValue) {
+        const inserted = await db
+          .insert(userBadges)
+          .values({
+            userId: user.id,
+            badgeId: lessonsCompletedBadge.id,
+          })
+          .onConflictDoNothing()
+          .returning();
+
+        if (inserted.length > 0) {
+          badgesAwarded.push(lessonsCompletedBadge.name);
+        }
+      }
+    }
+  } else {
+    // Failed attempt
+    await db
+      .insert(userProgress)
+      .values({
+        userId: user.id,
+        lessonId,
+        status: "in_progress",
+        score: calculatedPercentage,
+        attempts: newAttempts,
+      })
+      .onConflictDoUpdate({
+        target: [userProgress.userId, userProgress.lessonId],
+        set: {
+          score: calculatedPercentage,
+          attempts: newAttempts,
+          updatedAt: new Date(),
+        },
+      });
+  }
+
+  return {
+    success: true,
+    passed,
+    score: calculatedPercentage,
+    totalQuestions: lessonChallenges.length,
+    correctCount,
+    xpAwarded: passed ? lesson.xpReward : 0,
+    badgesAwarded,
+  };
+}

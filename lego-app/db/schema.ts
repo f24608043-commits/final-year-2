@@ -1,4 +1,4 @@
-﻿import {
+import {
   pgTable,
   pgEnum,
   uuid,
@@ -140,6 +140,7 @@ export const enrollments = pgTable(
       .notNull()
       .references(() => courses.id, { onDelete: "cascade" }),
     isActive: boolean("is_active").notNull().default(true),
+    placementAnswer: text("placement_answer"),
     enrolledAt: timestamp("enrolled_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [unique().on(t.userId, t.courseId)]

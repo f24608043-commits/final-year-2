@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>LEGO Learn And Go</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400..800;1,6..12,400..800&amp;family=Rubik:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-dim": "#d2d9f4", "surface-bright": "#faf8ff", "on-secondary-fixed": "#2a1700", "on-surface-variant": "#3d4a3d", "inverse-primary": "#4ae176", "error": "#ba1a1a", "primary": "#006e2f", "primary-container": "#22c55e", "secondary-fixed-dim": "#ffb95f", "on-error-container": "#93000a", "on-secondary": "#ffffff", "tertiary": "#005ac2", "surface-container-low": "#f2f3ff", "on-primary": "#ffffff", "on-primary-fixed": "#002109", "on-surface": "#131b2e", "secondary-container": "#fea619", "on-tertiary-fixed-variant": "#004395", "surface": "#faf8ff", "primary-fixed-dim": "#4ae176", "secondary-fixed": "#ffddb8", "on-tertiary-container": "#003d88", "surface-tint": "#006e2f", "on-error": "#ffffff", "on-primary-container": "#004b1e", "surface-variant": "#dae2fd", "on-background": "#131b2e", "tertiary-fixed-dim": "#adc6ff", "inverse-on-surface": "#eef0ff", "inverse-surface": "#283044", "outline-variant": "#bccbb9", "on-tertiary-fixed": "#001a42", "secondary": "#855300", "outline": "#6d7b6c", "on-primary-fixed-variant": "#005321", "surface-container-lowest": "#ffffff", "primary-fixed": "#6bff8f", "surface-container-highest": "#dae2fd", "surface-container": "#eaedff", "tertiary-container": "#82abff", "error-container": "#ffdad6", "on-tertiary": "#ffffff", "background": "#faf8ff", "on-secondary-container": "#684000", "on-secondary-fixed-variant": "#653e00", "surface-container-high": "#e2e7ff", "tertiary-fixed": "#d8e2ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-xl": "2.5rem", "space-md": "1rem", "margin": "1rem", "space-sm": "0.5rem", "gutter-desktop": "2rem", "space-xs": "0.25rem", "gutter": "1.25rem", "space-lg": "1.5rem", "margin-desktop": "3rem" }, fontFamily: { "body-md": ["Nunito Sans"], "label-lg": ["Rubik"], "headline-lg": ["Rubik"], "body-sm": ["Nunito Sans"], "label-md": ["Rubik"], "headline-md": ["Rubik"], "body-lg": ["Nunito Sans"], "headline-xl-mobile": ["Rubik"], "label-sm": ["Rubik"], "headline-lg-mobile": ["Rubik"], "headline-xl": ["Rubik"] }, fontSize: { "body-md": ["16px", { lineHeight: "24px", fontWeight: "500" }], "label-lg": ["15px", { lineHeight: "20px", fontWeight: "700" }], "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }], "body-sm": ["14px", { lineHeight: "20px", fontWeight: "600" }], "label-md": ["13px", { lineHeight: "18px", fontWeight: "700" }], "headline-md": ["22px", { lineHeight: "28px", fontWeight: "700" }], "body-lg": ["18px", { lineHeight: "28px", fontWeight: "500" }], "headline-xl-mobile": ["30px", { lineHeight: "38px", fontWeight: "800" }], "label-sm": ["11px", { lineHeight: "14px", fontWeight: "800" }], "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }], "headline-xl": ["44px", { lineHeight: "52px", fontWeight: "800" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-xs"><div class="flex items-center gap-space-xs"><span class="font-headline-md text-headline-md text-primary tracking-tight font-extrabold">LEGO</span><span class="hidden sr-only">Profile</span></div><div class="flex items-center gap-space-xs"><div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed shadow-[0_1px_4px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-secondary text-[18px]">local_fire_department</span><span class="font-label-sm text-label-sm font-extrabold">7</span></div><div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed shadow-[0_1px_4px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-tertiary text-[18px]">bolt</span><span class="font-label-sm text-label-sm font-extrabold">1,420</span></div><div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container text-on-error-container shadow-[0_1px_4px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-error text-[18px]">favorite</span><span class="font-label-sm text-label-sm font-extrabold">5</span></div><div class="min-w-[44px] min-h-[44px] flex items-center justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WXKbf4Qv5jyuTkVLP9u_G38HJJNn_ACEELJVgjg-RJZb8bdPw9k01Z0YWul9_x4KFcA9T4fHvg1M1ENYUqACqEpvy7B98CH-Lx4vLNtVsRcDLKhn3dQFtvezcD8Q0oxwwOeMYOFeckOMhV-88HWyaYEU1DzW6wqTnXdtHgwWxCG1dLt_NyVlOSewNPaf7rxAHZ-I7zvSQmlC6FlXp-PeR5O6_GD9yUGwbJ3W59gOxcHpoWTrBXTvx3SBl3fMH2B6yGpPBDnQbCRA"/></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full px-margin pb-6 gap-y-space-lg">
+<!-- Profile Header Hero Card -->
+<section class="relative flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-md">
+<!-- Action Bar / Quick Settings -->
+<div class="flex items-center justify-between w-full mb-space-sm">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wide">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>Learner Pro</span>
+</div>
+<button aria-label="Settings" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface hover:bg-surface-container active:scale-95 transition-transform" id="settingsBtn">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+</button>
+</div>
+<!-- Avatar & User Info Flex -->
+<div class="flex items-center gap-space-md">
+<!-- Mascot Avatar with Floating Edit Pill -->
+<div class="relative shrink-0">
+<div class="w-20 h-20 rounded-full bg-surface-container-high p-1 shadow-inner flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover rounded-full" data-alt="Playful vibrant 3D mascot avatar of a round green coding creature with cheerful smiling eyes, glowing golden antenna, cartoon style game character design, studio soft lighting on pastel background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDO7fAAbA2eIVkFPTcdoTIbzJweUaAhvLI2u26sK9saCYesJmFVNrwF2mBw2bkV_GlOEW6LgZQMqlJTStSYzUrhfQNUylP0WiGYakvNMzSp2d0OMKrwU4weVBhx1TO8AZLn8hA4R4P4gIx-ClMQHU7cFV3jovZqTuwB1X5Z-4e4Ah8tPETZvW9eA9XP05_S-2zJIO8nubxdgTYJgR25wNLFHG2Ru1qj_ylid_tyowf2C5Q50kpb7ep2"/>
+</div>
+<button aria-label="Change profile photo" class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md active:scale-90 transition-transform" id="editAvatarBtn">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+</button>
+</div>
+<!-- Identity Meta -->
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<h1 class="font-headline-md text-headline-md text-on-surface truncate">Alex Morgan</h1>
+<span class="material-symbols-outlined text-tertiary text-[20px]" style="font-variation-settings: 'FILL' 1;" title="Verified Student">check_circle</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">@alexcodes</p>
+<div class="flex items-center gap-1 text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-[15px]">calendar_today</span>
+<span class="font-body-sm text-body-sm">Joined January 2025</span>
+</div>
+</div>
+</div>
+<!-- Tiny Mascot Encouragement Bubble -->
+<div class="mt-space-md pt-space-sm bg-surface-container-low rounded-lg p-3 flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">sentiment_very_satisfied</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-tight">
+<strong class="text-on-surface font-bold">2 badges away</strong> from unlocking the Python Wizard cape!
+      </p>
+</div>
+</section>
+<!-- Gamified Stats Mosaic (4 Chunky Tactile Stat Cards) -->
+<section class="flex flex-col gap-space-xs">
+<h2 class="font-label-lg text-label-lg text-on-surface uppercase tracking-wider px-1">Current Milestones</h2>
+<div class="grid grid-cols-2 gap-space-sm">
+<!-- Card 1: Streak -->
+<div class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-lowest shadow-md transition-all active:translate-y-[2px] active:shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<div class="w-9 h-9 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-extrabold uppercase">STREAK</span>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-extrabold">7 Days</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Top 5% this week</span>
+</div>
+<!-- Card 2: XP -->
+<div class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-lowest shadow-md transition-all active:translate-y-[2px] active:shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<div class="w-9 h-9 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary font-extrabold uppercase">TOTAL XP</span>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-extrabold">1,420</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">+140 XP earned today</span>
+</div>
+<!-- Card 3: League -->
+<div class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-lowest shadow-md transition-all active:translate-y-[2px] active:shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<div class="w-9 h-9 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-extrabold uppercase">RANK</span>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-extrabold">Emerald</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Rank #4 • Promotion zone</span>
+</div>
+<!-- Card 4: Mastered -->
+<div class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-lowest shadow-md transition-all active:translate-y-[2px] active:shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<div class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-extrabold uppercase">LEARNED</span>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-extrabold">18</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Lessons completed</span>
+</div>
+</div>
+</section>
+<!-- Achievement Badge Cabinet (Core Showcase) -->
+<section class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-md">
+<!-- Header with progress pill -->
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface">Badge Cabinet</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tap any badge to inspect quest rewards</span>
+</div>
+<div class="px-2.5 py-1 rounded-full bg-surface-container text-primary font-label-md text-label-md">
+        8 / 24
+      </div>
+</div>
+<!-- Micro Level Progress Tracker -->
+<div class="w-full bg-surface-container h-2.5 rounded-full mb-space-lg overflow-hidden flex">
+<div class="bg-primary-container h-full rounded-full transition-all duration-700" style="width: 33%;"></div>
+</div>
+<!-- 3x3 Tactile Badges Grid -->
+<div class="grid grid-cols-3 gap-y-space-md gap-x-space-xs text-center" id="badgeGrid">
+<!-- Unlocked 1: Python Novice -->
+<button class="badge-tile flex flex-col items-center group active:scale-95 transition-transform" data-accent="secondary" data-desc="Completed all 10 core syntax loops and dynamic data models." data-icon="terminal" data-tier="Unlocked • Gold Tier" data-title="Python Novice">
+<div class="w-16 h-16 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shadow-md relative">
+<span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-secondary text-surface-bright flex items-center justify-center text-[11px] font-bold">★</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface mt-2 font-bold leading-tight">Python Novice 🐍</span>
+</button>
+<!-- Unlocked 2: 7-Day Streak -->
+<button class="badge-tile flex flex-col items-center group active:scale-95 transition-transform" data-accent="secondary" data-desc="Practiced Python or logic puzzles every single day for a full week." data-icon="local_fire_department" data-tier="Unlocked • Flame Tier" data-title="7-Day Streak">
+<div class="w-16 h-16 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shadow-md relative">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-error text-surface-bright flex items-center justify-center text-[11px] font-bold">7</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface mt-2 font-bold leading-tight">7-Day Streak 🔥</span>
+</button>
+<!-- Unlocked 3: Bug Squasher -->
+<button class="badge-tile flex flex-col items-center group active:scale-95 transition-transform" data-accent="primary" data-desc="Spotted and debugged 25 logic errors in the interactive playground sandbox." data-icon="pest_control" data-tier="Unlocked • Master Tier" data-title="Bug Squasher">
+<div class="w-16 h-16 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shadow-md relative">
+<span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">pest_control</span>
+<span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-surface-bright flex items-center justify-center text-[11px] font-bold">✓</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface mt-2 font-bold leading-tight">Bug Squasher 🐛</span>
+</button>
+<!-- Unlocked 4: Night Owl -->
+<button class="badge-tile flex flex-col items-center group active:scale-95 transition-transform" data-accent="tertiary" data-desc="Solved 3 complex recursion challenges between 11 PM and 4 AM." data-icon="bedtime" data-tier="Unlocked • Special Edition" data-title="Night Owl">
+<div class="w-16 h-16 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center shadow-md relative">
+<span class="material-symbols-outlined text-[30px]" style="font-variation-settings: 'FILL' 1;">bedtime</span>
+<span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-tertiary text-surface-bright flex items-center justify-center text-[11px] font-bold">☾</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface mt-2 font-bold leading-tight">Night Owl 🦉</span>
+</button>
+<!-- Locked 1: Algorithm Guru -->
+<button class="badge-tile flex flex-col items-center group opacity-70 active:scale-95 transition-transform" data-accent="locked" data-desc="Unlock by completing Big-O runtime analysis and binary search tree sorting." data-icon="extension" data-tier="Locked • Requires Level 20" data-title="Algorithm Guru 🧩">
+<div class="w-16 h-16 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shadow-inner relative">
+<span class="material-symbols-outlined text-[28px] opacity-40">extension</span>
+<div class="absolute inset-0 bg-surface-dim/40 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">lock</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-2 font-bold leading-tight">Algo Guru 🧩</span>
+</button>
+<!-- Locked 2: Speed Demon -->
+<button class="badge-tile flex flex-col items-center group opacity-70 active:scale-95 transition-transform" data-accent="locked" data-desc="Solve 5 rapid-fire interactive syntax quizzes under 60 seconds with 100% accuracy." data-icon="timer" data-tier="Locked • Speed Challenge" data-title="Speed Demon ⚡">
+<div class="w-16 h-16 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shadow-inner relative">
+<span class="material-symbols-outlined text-[28px] opacity-40">timer</span>
+<div class="absolute inset-0 bg-surface-dim/40 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">lock</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-2 font-bold leading-tight">Speed Demon ⚡</span>
+</button>
+<!-- Locked 3: Tutor Apprentice -->
+<button class="badge-tile flex flex-col items-center group opacity-70 active:scale-95 transition-transform" data-accent="locked" data-desc="Book and attend your first 1-on-1 mentor code review room." data-icon="co_present" data-tier="Locked • Community Quest" data-title="Tutor Apprentice 👨‍🏫">
+<div class="w-16 h-16 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shadow-inner relative">
+<span class="material-symbols-outlined text-[28px] opacity-40">co_present</span>
+<div class="absolute inset-0 bg-surface-dim/40 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">lock</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-2 font-bold leading-tight">Apprentice 👨‍🏫</span>
+</button>
+<!-- Locked 4: Century Club -->
+<button class="badge-tile flex flex-col items-center group opacity-70 active:scale-95 transition-transform" data-accent="locked" data-desc="Accumulate 10,000 total experience points across curriculum modules." data-icon="military_tech" data-tier="Locked • 1,420 / 10,000 XP" data-title="Century Club 💯">
+<div class="w-16 h-16 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shadow-inner relative">
+<span class="material-symbols-outlined text-[28px] opacity-40">military_tech</span>
+<div class="absolute inset-0 bg-surface-dim/40 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">lock</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-2 font-bold leading-tight">Century Club 💯</span>
+</button>
+<!-- Extra Locked Mystery Slot -->
+<button class="badge-tile flex flex-col items-center group opacity-70 active:scale-95 transition-transform" data-accent="locked" data-desc="Reach top 3 in the Emerald League sprint before Sunday midnight." data-icon="help" data-tier="Secret Badge" data-title="Mystery Legend 🌟">
+<div class="w-16 h-16 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shadow-inner relative">
+<span class="material-symbols-outlined text-[26px] opacity-40">help</span>
+<div class="absolute inset-0 bg-surface-dim/40 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">lock</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-2 font-bold leading-tight">Mystery 🌟</span>
+</button>
+</div>
+</section>
+<!-- Interactive Badge Detail Drawer Modal (Toggled via JS) -->
+<div aria-modal="true" class="fixed inset-0 bg-inverse-surface/60 z-50 backdrop-blur-sm flex items-end justify-center hidden" id="badgeModal" role="dialog">
+<div class="bg-surface-container-lowest w-full max-w-md rounded-t-3xl p-space-lg flex flex-col items-center text-center shadow-xl animate-bounce-short">
+<div class="w-12 h-1.5 bg-surface-container-highest rounded-full mb-space-md"></div>
+<div class="w-20 h-20 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shadow-lg mb-space-sm" id="modalIconContainer">
+<span class="material-symbols-outlined text-[40px]" id="modalIcon">military_tech</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-extrabold tracking-wider mb-1" id="modalTier">Tier</span>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2" id="modalTitle">Badge Title</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-lg px-space-sm" id="modalDesc">Description text goes here</p>
+<button class="w-full py-3.5 px-space-md rounded-xl bg-primary-container text-on-primary font-label-lg text-label-lg active:scale-98 shadow-md transition-all" id="closeModalBtn">
+        Awesome, Got It!
+      </button>
+</div>
+</div>
+<!-- Social Section: Friends & Cohort -->
+<section class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-md gap-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]">group</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Study Squad</h2>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">3 Friends</span>
+</div>
+<!-- Friends Avatar Strip -->
+<div class="flex flex-col gap-y-space-sm">
+<!-- Friend 1 -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-3">
+<img class="w-11 h-11 rounded-full object-cover shadow-sm" data-alt="Portrait avatar of friendly young woman developer named Elena wearing bright yellow headphones and teal sweatshirt smiling in flat 3D character illustration style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeitZ7u8iyOh5hg8QeLoMwpuymBrgDh1YzF6aliv8WNLPSHS3QBF5sUcuuLNxqWVwrWuAWPHkqoJqNp8rXOYyQxi1_f8H4xpWFB2YIDWD3RXp5iRYvI7oqGCbfQDUloONfjLi2AAel4nhPhJ3PL4j5oLEsPzIxAWVHMizCnU83F-4ntUbvbXR5QuhYp-1gs92m1yud45MB3rz5rvjl0Fya77XFIaFE-FArG1kmsal-ydfsqHarAhgT"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Elena Rostova</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Python • 1,890 XP</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">local_fire_department</span>
+<span>12d</span>
+</div>
+</div>
+<!-- Friend 2 -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-3">
+<img class="w-11 h-11 rounded-full object-cover shadow-sm" data-alt="Stylized 3D portrait avatar of male programmer named Devon with glasses and warm smile against orange studio backdrop in digital clay art aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeNRl_C7vZJjIUbLHKH9S4yROAoC7-J5Lzlm_3FxPhxACBhkgrMZjo2WCLfg-HMNL3ahdabTtuBPDAQGGLtgCeBtI0HK9w49vVUJ5s3oFwEYk67-_rs5S7GWSPpE7UK9Emj_eZ7hO70qAv1XHgxZ5RR28j2DaeaOi5ZmBnoyCtKyIQc3FoXiLwLiCwgOr-6aZMkD6-3pFaPD5ndh8Zc9uD8E5MO7skPj_cZpKNruY2luxkuQqE8Nmi"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Devon Vance</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Web Dev • 1,350 XP</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">local_fire_department</span>
+<span>5d</span>
+</div>
+</div>
+<!-- Friend 3 -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-3">
+<img class="w-11 h-11 rounded-full object-cover shadow-sm" data-alt="Charming cartoon 3D character render of female data student Samantha with dark hair and blue cap in modern vibrant tech education art style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBM1W3Lh0gzQRoxabdsr-qpfQhIQUJUkEfe4l-RRtue0uUh72THJnUYwOZj0nsG2pUWZiBtBo67H18CDyD3eT552WTxEoWPy4rs6nMrTsKo7SFmNjMLhPDWYc7QnAEeDLdkBv3xiFOwtRgXHW70dVhHb2mVR4bR8-opKZ2Q2oWFQXqYiB-grt5vBCQxJm3xBQZCV04e_Btd8FYUTS76DrfB2wo31fe1bYB0aFLcr2eBCvyuwRyCZVfJ"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Samantha Wu</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Data Science • 940 XP</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">local_fire_department</span>
+<span>3d</span>
+</div>
+</div>
+</div>
+<!-- Chunky Tactile Social CTA Button -->
+<button class="w-full flex items-center justify-center gap-2 py-3 px-space-md rounded-xl bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:bg-primary transition-all active:translate-y-[2px] active:shadow-sm" id="shareProfileBtn">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+<span>Add Friends / Share Profile</span>
+</button>
+</section>
+<!-- Interactive Toast Notification -->
+<div class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-lg font-label-md text-label-md flex items-center gap-2 opacity-0 pointer-events-none transition-opacity duration-300 z-50" id="toastMessage">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[18px]">share</span>
+<span id="toastText">Profile link copied to clipboard!</span>
+</div>
+</div>
+<script>
+  (function() {
+    const badgeTiles = document.querySelectorAll('.badge-tile');
+    const modal = document.getElementById('badgeModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalTier = document.getElementById('modalTier');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalIconContainer = document.getElementById('modalIconContainer');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const shareProfileBtn = document.getElementById('shareProfileBtn');
+    const toast = document.getElementById('toastMessage');
+    const toastText = document.getElementById('toastText');
+
+    function showToast(msg) {
+      if (!toast) return;
+      toastText.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2400);
+    }
+
+    badgeTiles.forEach(tile => {
+      tile.addEventListener('click', () => {
+        const title = tile.getAttribute('data-title') || 'Achievement';
+        const desc = tile.getAttribute('data-desc') || 'Keep learning to progress.';
+        const tier = tile.getAttribute('data-tier') || 'Badge';
+        const icon = tile.getAttribute('data-icon') || 'military_tech';
+        const accent = tile.getAttribute('data-accent') || 'primary';
+
+        modalTitle.textContent = title;
+        modalDesc.textContent = desc;
+        modalTier.textContent = tier;
+        modalIcon.textContent = icon;
+
+        modalIconContainer.className = 'w-20 h-20 rounded-full flex items-center justify-center shadow-lg mb-space-sm';
+        if (accent === 'secondary') {
+          modalIconContainer.classList.add('bg-secondary-fixed', 'text-on-secondary-fixed');
+          modalTier.className = 'font-label-sm text-label-sm text-secondary uppercase font-extrabold tracking-wider mb-1';
+        } else if (accent === 'tertiary') {
+          modalIconContainer.classList.add('bg-tertiary-fixed', 'text-on-tertiary-fixed');
+          modalTier.className = 'font-label-sm text-label-sm text-tertiary uppercase font-extrabold tracking-wider mb-1';
+        } else if (accent === 'locked') {
+          modalIconContainer.classList.add('bg-surface-container', 'text-on-surface-variant');
+          modalTier.className = 'font-label-sm text-label-sm text-on-surface-variant uppercase font-extrabold tracking-wider mb-1';
+        } else {
+          modalIconContainer.classList.add('bg-primary-fixed', 'text-on-primary-fixed');
+          modalTier.className = 'font-label-sm text-label-sm text-primary uppercase font-extrabold tracking-wider mb-1';
+        }
+
+        modal.classList.remove('hidden');
+      });
+    });
+
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+    }
+
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+    }
+
+    if (shareProfileBtn) {
+      shareProfileBtn.addEventListener('click', () => {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText('https://learnandgo.app/user/alexcodes').then(() => {
+            showToast('Profile link copied! Share with friends 🚀');
+          }).catch(() => {
+            showToast('Shared: @alexcodes on LEGO!');
+          });
+        } else {
+          showToast('Profile link ready to share!');
+        }
+      });
+    }
+
+    const editAvatarBtn = document.getElementById('editAvatarBtn');
+    if (editAvatarBtn) {
+      editAvatarBtn.addEventListener('click', () => {
+        showToast('Avatar builder opening soon!');
+      });
+    }
+
+    const settingsBtn = document.getElementById('settingsBtn');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        showToast('Opening account preferences...');
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/80 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-bold"><div class="flex items-center justify-around h-16 px-space-xs"><a class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center text-on-surface-variant transition-colors" data-path="path" href="#"><span class="material-symbols-outlined text-[24px]">route</span><span class="font-label-sm text-label-sm">Path</span></a><a class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center text-on-surface-variant transition-colors" data-path="library" href="#"><span class="material-symbols-outlined text-[24px]">video_library</span><span class="font-label-sm text-label-sm">Library</span></a><a class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center text-on-surface-variant transition-colors" data-path="mentors" href="#"><span class="material-symbols-outlined text-[24px]">co_present</span><span class="font-label-sm text-label-sm">Mentors</span></a><a class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center text-on-surface-variant transition-colors" data-path="leaderboard" href="#"><span class="material-symbols-outlined text-[24px]">military_tech</span><span class="font-label-sm text-label-sm">Ranks</span></a><a aria-current="page" class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center transition-colors text-primary font-bold" data-path="profile" href="#"><span class="material-symbols-outlined text-[24px]">account_circle</span><span class="font-label-sm text-label-sm">Profile</span></a></div></nav></body></html>

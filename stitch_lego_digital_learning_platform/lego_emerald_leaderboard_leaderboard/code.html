@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>LEGO Learn And Go</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400..800;1,6..12,400..800&amp;family=Rubik:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-dim": "#d2d9f4", "surface-bright": "#faf8ff", "on-secondary-fixed": "#2a1700", "on-surface-variant": "#3d4a3d", "inverse-primary": "#4ae176", "error": "#ba1a1a", "primary": "#006e2f", "primary-container": "#22c55e", "secondary-fixed-dim": "#ffb95f", "on-error-container": "#93000a", "on-secondary": "#ffffff", "tertiary": "#005ac2", "surface-container-low": "#f2f3ff", "on-primary": "#ffffff", "on-primary-fixed": "#002109", "on-surface": "#131b2e", "secondary-container": "#fea619", "on-tertiary-fixed-variant": "#004395", "surface": "#faf8ff", "primary-fixed-dim": "#4ae176", "secondary-fixed": "#ffddb8", "on-tertiary-container": "#003d88", "surface-tint": "#006e2f", "on-error": "#ffffff", "on-primary-container": "#004b1e", "surface-variant": "#dae2fd", "on-background": "#131b2e", "tertiary-fixed-dim": "#adc6ff", "inverse-on-surface": "#eef0ff", "inverse-surface": "#283044", "outline-variant": "#bccbb9", "on-tertiary-fixed": "#001a42", "secondary": "#855300", "outline": "#6d7b6c", "on-primary-fixed-variant": "#005321", "surface-container-lowest": "#ffffff", "primary-fixed": "#6bff8f", "surface-container-highest": "#dae2fd", "surface-container": "#eaedff", "tertiary-container": "#82abff", "error-container": "#ffdad6", "on-tertiary": "#ffffff", "background": "#faf8ff", "on-secondary-container": "#684000", "on-secondary-fixed-variant": "#653e00", "surface-container-high": "#e2e7ff", "tertiary-fixed": "#d8e2ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-xl": "2.5rem", "space-md": "1rem", "margin": "1rem", "space-sm": "0.5rem", "gutter-desktop": "2rem", "space-xs": "0.25rem", "gutter": "1.25rem", "space-lg": "1.5rem", "margin-desktop": "3rem" }, fontFamily: { "body-md": ["Nunito Sans"], "label-lg": ["Rubik"], "headline-lg": ["Rubik"], "body-sm": ["Nunito Sans"], "label-md": ["Rubik"], "headline-md": ["Rubik"], "body-lg": ["Nunito Sans"], "headline-xl-mobile": ["Rubik"], "label-sm": ["Rubik"], "headline-lg-mobile": ["Rubik"], "headline-xl": ["Rubik"] }, fontSize: { "body-md": ["16px", { lineHeight: "24px", fontWeight: "500" }], "label-lg": ["15px", { lineHeight: "20px", fontWeight: "700" }], "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }], "body-sm": ["14px", { lineHeight: "20px", fontWeight: "600" }], "label-md": ["13px", { lineHeight: "18px", fontWeight: "700" }], "headline-md": ["22px", { lineHeight: "28px", fontWeight: "700" }], "body-lg": ["18px", { lineHeight: "28px", fontWeight: "500" }], "headline-xl-mobile": ["30px", { lineHeight: "38px", fontWeight: "800" }], "label-sm": ["11px", { lineHeight: "14px", fontWeight: "800" }], "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }], "headline-xl": ["44px", { lineHeight: "52px", fontWeight: "800" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-xs"><div class="flex items-center gap-space-xs"><span class="font-headline-md text-headline-md text-primary tracking-tight font-extrabold">LEGO</span><span class="hidden sr-only">Leaderboard</span></div><div class="flex items-center gap-space-xs"><div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed shadow-[0_1px_4px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-secondary text-[18px]">local_fire_department</span><span class="font-label-sm text-label-sm font-extrabold">7</span></div><div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed shadow-[0_1px_4px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-tertiary text-[18px]">bolt</span><span class="font-label-sm text-label-sm font-extrabold">1,420</span></div><div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container text-on-error-container shadow-[0_1px_4px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-error text-[18px]">favorite</span><span class="font-label-sm text-label-sm font-extrabold">5</span></div><div class="min-w-[44px] min-h-[44px] flex items-center justify-center"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WXKbf4Qv5jyuTkVLP9u_G38HJJNn_ACEELJVgjg-RJZb8bdPw9k01Z0YWul9_x4KFcA9T4fHvg1M1ENYUqACqEpvy7B98CH-Lx4vLNtVsRcDLKhn3dQFtvezcD8Q0oxwwOeMYOFeckOMhV-88HWyaYEU1DzW6wqTnXdtHgwWxCG1dLt_NyVlOSewNPaf7rxAHZ-I7zvSQmlC6FlXp-PeR5O6_GD9yUGwbJ3W59gOxcHpoWTrBXTvx3SBl3fMH2B6yGpPBDnQbCRA"/></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full px-margin pb-12 space-y-4">
+<!-- Gamified League Header & Timer Banner -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between gap-space-sm mb-space-sm">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-md text-headline-md text-on-surface">Emerald League</h2>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-label-sm bg-primary-container text-on-primary-container font-extrabold uppercase tracking-wide">Tier V</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Weekly Coding Sprint</p>
+</div>
+</div>
+<div class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px] text-secondary">timer</span>
+<span>2d 14h left</span>
+</div>
+</div>
+<!-- League Milestone Notification Card -->
+<div class="flex items-center gap-space-sm p-3 rounded-lg bg-surface-container-low text-on-surface">
+<span class="material-symbols-outlined text-primary text-[22px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">Top 10 advance to Sapphire League!</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Demotion zone starts at rank 25</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">chevron_right</span>
+</div>
+</section>
+<!-- Delightful Mascot Cheer Bubble -->
+<section class="flex items-center gap-space-sm bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<div class="relative w-14 h-14 flex-shrink-0 flex items-center justify-center bg-primary-container/20 rounded-full overflow-hidden">
+<!-- Friendly Blob Mascot (LEGO Learn and Go Style) -->
+<svg class="w-12 h-12 text-primary-container" fill="currentColor" viewbox="0 0 100 100">
+<path d="M50 15 C28 15, 18 35, 18 60 C18 80, 30 92, 50 92 C70 92, 82 80, 82 60 C82 35, 72 15, 50 15 Z"></path>
+<circle cx="38" cy="45" fill="#004b1e" r="4"></circle>
+<circle cx="62" cy="45" fill="#004b1e" r="4"></circle>
+<path d="M42 58 Q50 68 58 58" fill="none" stroke="#004b1e" stroke-linecap="round" stroke-width="3"></path>
+<!-- Joy Sparkle -->
+<polygon fill="#fea619" points="76,20 78,26 84,28 78,30 76,36 74,30 68,28 74,26"></polygon>
+</svg>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-1">
+<span class="font-label-md text-label-md text-primary font-bold">You're cruising, Alex!</span>
+<span class="material-symbols-outlined text-secondary text-[16px]">local_fire_department</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-tight">
+        You climbed <strong class="text-primary font-bold">+2 spots</strong> today! Complete 1 Python challenge to secure rank 4.
+      </p>
+</div>
+</section>
+<!-- Top 3 Podium Display -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md pt-6 shadow-sm">
+<div class="flex items-end justify-center gap-2">
+<!-- 2nd Place Podium (Devon M.) -->
+<div class="flex-1 flex flex-col items-center">
+<div class="relative mb-2 flex flex-col items-center">
+<div class="w-7 h-7 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-label-md text-label-md shadow-sm mb-1">
+            🥈
+          </div>
+<div class="relative w-14 h-14 rounded-full p-0.5 bg-surface-container-high shadow-sm">
+<img class="w-full h-full rounded-full object-cover" data-alt="Friendly portrait of Devon smiling outdoors with glasses and warm natural lighting, avatar style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0iFzWvswuBh9qvz-l1mEp8tOMKZWm-2qq42s1Pif_pDFs-N0YRv09Vnp3KI9Dun7rtrX-8GBnlR6GpKOvhiLkd3tBoj3-1O6GEwjn5ZS0hiivAISFg94sIAU-kOILmta4w5L8t26VSvPndqMJo9HR_7kXVa7PDeSIJjWuc8_iMYTqwmXynnskfRP04JUonzCcy3-dWydUX9YbJiuHx7kWGarHxgsQbCzij_PVbzp4zvpdcZSdN3O0"/>
+</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface truncate max-w-[85px] text-center">Devon M.</p>
+<span class="font-body-sm text-body-sm text-tertiary font-bold mb-2">1,820 XP</span>
+<!-- Pedestal -->
+<div class="w-full h-24 rounded-t-lg bg-surface-container-high flex flex-col items-center justify-center shadow-inner">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant font-extrabold">2</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Silver</span>
+</div>
+</div>
+<!-- 1st Place Podium (Samantha W. - Tallest) -->
+<div class="flex-1 flex flex-col items-center">
+<div class="relative mb-2 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-label-md text-label-md shadow-md mb-1 animate-bounce">
+            👑
+          </div>
+<div class="relative w-16 h-16 rounded-full p-1 bg-secondary-container shadow-md">
+<img class="w-full h-full rounded-full object-cover" data-alt="Confident profile photo of Samantha with a bright smile in vibrant studio lighting, joyful learner look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz8we96tjgOWFXxWAkiESuIzMRvarJP2pFn7l0ycBi6Aqlmdo6A-awNVMjNhepQkQgHBwyqcTta_eraYeBy6ZUJIGX_XKLcF147sW54SHooyaVme_mypQ_hQien19cAr-KbE7oIFTBD47hJQhBaAxqn804Bzcqb7l_4iER8UXsJXcFLe9k9qiUSaBlXv9LreFQQSOG2FxWMmczDUwCAA9BZvUJ_Mctaoo9g4dnaWSxwrF9GdGthhP5"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[14px]">star</span>
+</div>
+</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface truncate max-w-[90px] text-center font-extrabold">Samantha W.</p>
+<span class="font-label-md text-label-md text-secondary font-extrabold mb-2">2,418 XP</span>
+<!-- Pedestal -->
+<div class="w-full h-32 rounded-t-lg bg-secondary-fixed flex flex-col items-center justify-center shadow-inner">
+<span class="font-headline-xl-mobile text-headline-xl-mobile text-on-secondary-fixed font-black">1</span>
+<span class="font-label-sm text-label-sm text-on-secondary-fixed-variant uppercase tracking-wider font-extrabold">Leader</span>
+</div>
+</div>
+<!-- 3rd Place Podium (Kenji T.) -->
+<div class="flex-1 flex flex-col items-center">
+<div class="relative mb-2 flex flex-col items-center">
+<div class="w-7 h-7 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center font-label-md text-label-md shadow-sm mb-1">
+            🥉
+          </div>
+<div class="relative w-14 h-14 rounded-full p-0.5 bg-surface-container-high shadow-sm">
+<img class="w-full h-full rounded-full object-cover" data-alt="Headshot of Kenji smiling in front of clean creative technology setup with ambient soft neon lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbaPUC-Z7Ap8Q2GN1FmmmNMZElB37vODUPlcgfE53e0bkK71FNNvRi7hVeqN3MPHGLQB8La5VX_1f9l1gXvLYzzDCvqktshRicWGgQAZritAUtL6t3McxPBQsdmow4LnvU0S4Hd1UjyP_1tBk5CCYyg62xhyW1RzfZ0N7PWf_jn_3GVkKZTPtL4j3vDzcvrbCc4LokwXIm1RvtT_uiNX-kKynbuT4U_Ps2QmRlGY80Poxzg_VLuSlv"/>
+</div>
+</div>
+<p class="font-label-md text-label-md text-on-surface truncate max-w-[85px] text-center">Kenji T.</p>
+<span class="font-body-sm text-body-sm text-tertiary font-bold mb-2">1,560 XP</span>
+<!-- Pedestal -->
+<div class="w-full h-20 rounded-t-lg bg-surface-container-low flex flex-col items-center justify-center shadow-inner">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant font-extrabold">3</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Bronze</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Demarcation Header / Promotion Status Bar -->
+<div class="flex items-center justify-between px-space-sm py-1 bg-surface-container text-on-surface-variant rounded-lg">
+<div class="flex items-center gap-1 font-label-sm text-label-sm text-primary">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+<span>PROMOTION ZONE (TOP 10)</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Reset Sunday 00:00</span>
+</div>
+<!-- Interactive Leaderboard List -->
+<section class="space-y-space-xs">
+<!-- Rank 4: Maria S. -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm transition-transform active:scale-[0.99]">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface-variant w-6 text-center font-extrabold">4</span>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Portrait of Maria in a modern workspace setting smiling warmly, colorful blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq-sxZzlzfTE3bi-r4o2Gw1kuCMcaSXMQTMBvlxBQxOJervzQ-aEDh-XbTqXyph_0-ujwEcT3Sgu67VborWvleDcM7Fn_hwi6K5bpdyeNn4QlWZIE_a2heYPMIe9GcyXtBJ7_TcVjHLBmUoSM73jCXdINcLiiGjeTEmJRccVEK0auuNwC-mPilsanMaqHsjxQ5SWNsUhihrs2PAHqSOU8dC9rAmzQohU9rL2DI-3CCnCg9tsonggWu"/>
+</div>
+<div class="min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">Maria S.</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Python Master • 9-day streak</p>
+</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0">
+<div class="text-right">
+<span class="font-label-lg text-label-lg text-tertiary">1,490</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">XP</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">remove</span>
+</div>
+</div>
+<!-- Rank 5 (CURRENT USER - Highlighted Tactile Focus Card) -->
+<div class="relative flex items-center justify-between p-space-md bg-primary-container/15 rounded-xl shadow-md transition-transform active:scale-[0.99] overflow-hidden">
+<!-- Accent Flash Badge -->
+<div class="absolute -top-1 right-8 px-2 py-0.5 bg-primary text-on-primary rounded-b-md text-label-sm font-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+<span>YOU</span>
+</div>
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-6 text-center">
+<span class="font-headline-md text-headline-md text-primary font-black">5</span>
+</div>
+<div class="relative w-11 h-11 rounded-full p-0.5 bg-primary flex-shrink-0 shadow-sm">
+<img alt="Your Profile" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WXKbf4Qv5jyuTkVLP9u_G38HJJNn_ACEELJVgjg-RJZb8bdPw9k01Z0YWul9_x4KFcA9T4fHvg1M1ENYUqACqEpvy7B98CH-Lx4vLNtVsRcDLKhn3dQFtvezcD8Q0oxwwOeMYOFeckOMhV-88HWyaYEU1DzW6wqTnXdtHgwWxCG1dLt_NyVlOSewNPaf7rxAHZ-I7zvSQmlC6FlXp-PeR5O6_GD9yUGwbJ3W59gOxcHpoWTrBXTvx3SBl3fMH2B6yGpPBDnQbCRA"/>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<p class="font-label-lg text-label-lg text-on-surface font-extrabold truncate">Alex (You)</p>
+<span class="inline-flex items-center px-1.5 py-0.2 rounded-full bg-primary-container text-on-primary-container text-label-sm font-label-sm font-bold">Safe</span>
+</div>
+<p class="font-body-sm text-body-sm text-primary font-semibold">Web Dev Quest • 7-day streak</p>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<div class="text-right">
+<span class="font-label-lg text-label-lg text-primary font-extrabold">1,420</span>
+<span class="block font-label-sm text-label-sm text-primary font-bold">XP</span>
+</div>
+<div class="flex items-center text-primary font-label-sm text-label-sm font-extrabold bg-surface-container-lowest px-1.5 py-0.5 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">arrow_drop_up</span>
+<span>+2</span>
+</div>
+</div>
+</div>
+<!-- Rank 6: Liam K. -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm transition-transform active:scale-[0.99]">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface-variant w-6 text-center font-extrabold">6</span>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Portrait of Liam with headphones around his neck smiling confidently in a modern studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8l8h80XbBo0qpQXbs8vSnoHszpgvjyUqxDHHqn-Ao-zw1Z9RBwWOuOCSOyGLDzACkkkU9al4yKFverK2EZQmkXRKWlBWqbdzr8VdoA1uWacszjaXLAcHkUc4hd89VVLwZNJPVyCaxMFcqnJrPnmZv9j18PnNIRNmrgXWkHBo7Sem33IDY0y8JJUY3FPzwYDBew89wO2W582bpmuXx1Hl3hfQ25bkm9L2Ne7cRfdP-vP2qcK3K6_vo"/>
+</div>
+<div class="min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">Liam K.</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Data Structures • 4-day streak</p>
+</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0">
+<div class="text-right">
+<span class="font-label-lg text-label-lg text-tertiary">1,210</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">XP</span>
+</div>
+<div class="flex items-center text-error font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+<span>-1</span>
+</div>
+</div>
+</div>
+<!-- Rank 7: Priya R. -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm transition-transform active:scale-[0.99]">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface-variant w-6 text-center font-extrabold">7</span>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Studio avatar portrait of Priya wearing chic glasses with cheerful demeanor and creative lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg9mblVWlIoPm3KRPAmb1r3OhF5Kppz4dm8rr72sh-rwZJ14euoY3ECjiYKtYdYkJ4iMQBxup52Wc1BhmYau3hWRImnGSySeL7N7eHfHL39HhdXmIuO27VtXiw9U3vpe0tW5Vn6f0B8xLne5R4xc6J4o59hvyMxKjahgBIYdQEALOR4cGixcmJstUwgh-5VM8gRAllGX9F_SWxPEf6qiaO1iLjY_2m6bEPUGgPMsB2jaUHdZ9jte2L"/>
+</div>
+<div class="min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">Priya R.</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Machine Learning • 12-day streak</p>
+</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0">
+<div class="text-right">
+<span class="font-label-lg text-label-lg text-tertiary">1,180</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">XP</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">remove</span>
+</div>
+</div>
+<!-- Rank 8: David O. -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm transition-transform active:scale-[0.99]">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface-variant w-6 text-center font-extrabold">8</span>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Portrait of David smiling casually in a bright room with tech stickers and modern computer setup behind" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-IwKC-pp16-4RKGwlBJdPz5RVP88uQXNu8Es3PQwqxFXRuxkTUm7jqwADmEJr9zCE8PAzkLRa9GdhVZRLJWVj-eh4fdasnoRP4szNU_uv3FV-mtWOJeQ56P8xP07LyJA_3xsATDp-BX93qAE2kHBoOHB8NAjQZoGa0VFVOiwOTMkam7_lyYp3_04pyXzrkhCQHv2iIJonE_CrwQqjv7eW6AV24IWqIG4j3vpy1gQ9H4IoDbAjEnwI"/>
+</div>
+<div class="min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">David O.</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Algorithms 101 • 3-day streak</p>
+</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0">
+<div class="text-right">
+<span class="font-label-lg text-label-lg text-tertiary">950</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">XP</span>
+</div>
+<div class="flex items-center text-error font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+<span>-2</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Practice Action Chunky Callout -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-3">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Boost Your Rank</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Earn up to +80 XP right now in Speed Quiz</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[24px]">bolt</span>
+</div>
+</div>
+<button class="w-full py-3.5 px-space-md rounded-xl bg-primary text-on-primary font-label-lg text-label-lg uppercase tracking-wider shadow-md hover:bg-primary/95 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+<span>Start Quick Battle (+40 XP)</span>
+</button>
+</section>
+</div>
+<script>
+  // Ensure "Ranks" tab in App Shell bottom nav shows active styling dynamically
+  (function() {
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+      if (link.getAttribute('data-path') === 'leaderboard') {
+        link.classList.add('text-primary');
+        link.classList.remove('text-on-surface-variant');
+        const icon = link.querySelector('.material-symbols-outlined');
+        if (icon) {
+          icon.style.fontVariationSettings = "'FILL' 1";
+        }
+      }
+    });
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/80 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-bold"><div class="flex items-center justify-around h-16 px-space-xs"><a class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center text-on-surface-variant transition-colors" data-path="path" href="#"><span class="material-symbols-outlined text-[24px]">route</span><span class="font-label-sm text-label-sm">Path</span></a><a class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center text-on-surface-variant transition-colors" data-path="library" href="#"><span class="material-symbols-outlined text-[24px]">video_library</span><span class="font-label-sm text-label-sm">Library</span></a><a class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center text-on-surface-variant transition-colors" data-path="mentors" href="#"><span class="material-symbols-outlined text-[24px]">co_present</span><span class="font-label-sm text-label-sm">Mentors</span></a><a aria-current="page" class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center transition-colors text-primary font-bold" data-path="leaderboard" href="#"><span class="material-symbols-outlined text-[24px]">military_tech</span><span class="font-label-sm text-label-sm">Ranks</span></a><a class="min-w-[44px] min-h-[44px] flex flex-col items-center justify-center text-on-surface-variant transition-colors" data-path="profile" href="#"><span class="material-symbols-outlined text-[24px]">account_circle</span><span class="font-label-sm text-label-sm">Profile</span></a></div></nav></body></html>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -274,12 +274,21 @@ export default function LessonClient({
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               {result.passed ? (
-                <Link
-                  href="/path"
-                  className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow hover:bg-blue-700"
-                >
-                  Continue to Next Level →
-                </Link>
+                <>
+                  <Link
+                    href="/path"
+                    className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow hover:bg-blue-700"
+                  >
+                    Continue to Next Level →
+                  </Link>
+                  {/* FR4.5: Practice mode prompt — shown only after passing */}
+                  <Link
+                    href={`/lesson/${lessonId}/practice`}
+                    className="rounded-xl border border-purple-300 bg-purple-50 px-6 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100"
+                  >
+                    🎯 Want Extra Practice? (Bonus XP)
+                  </Link>
+                </>
               ) : (
                 <>
                   <button

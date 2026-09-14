@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { createClient } from "@/utils/supabase/server";
 import { db } from "@/db";
@@ -9,6 +9,7 @@ import {
   dailyActivityLog,
   lessons,
   profiles,
+  units,
   userBadges,
   userProgress,
 } from "@/db/schema";
@@ -228,6 +229,64 @@ export async function submitQuiz(
 
         if (inserted.length > 0) {
           badgesAwarded.push(lessonsCompletedBadge.name);
+        }
+      }
+    }
+
+    // c. Unit completion badge (FR9.1d)
+    // Check if ALL lessons in this lesson's unit are now completed by this user
+    const [thisLesson] = await db
+      .select({ unitId: lessons.unitId })
+      .from(lessons)
+      .where(eq(lessons.id, lessonId))
+      .limit(1);
+
+    if (thisLesson) {
+      const [thisUnit] = await db
+        .select({ id: units.id, badgeId: units.badgeId })
+        .from(units)
+        .where(eq(units.id, thisLesson.unitId))
+        .limit(1);
+
+      if (thisUnit?.badgeId) {
+        const unitLessons = await db
+          .select({ id: lessons.id })
+          .from(lessons)
+          .where(eq(lessons.unitId, thisUnit.id));
+
+        const unitLessonIds = unitLessons.map((l) => l.id);
+
+        if (unitLessonIds.length > 0) {
+          const [{ count: completedInUnit }] = await db
+            .select({ count: count() })
+            .from(userProgress)
+            .where(
+              and(
+                eq(userProgress.userId, user.id),
+                eq(userProgress.status, "completed"),
+                inArray(userProgress.lessonId, unitLessonIds)
+              )
+            );
+
+          if (Number(completedInUnit) >= unitLessonIds.length) {
+            const [unitBadge] = await db
+              .select({ id: badges.id, name: badges.name })
+              .from(badges)
+              .where(eq(badges.id, thisUnit.badgeId))
+              .limit(1);
+
+            if (unitBadge) {
+              const inserted = await db
+                .insert(userBadges)
+                .values({ userId: user.id, badgeId: unitBadge.id })
+                .onConflictDoNothing()
+                .returning();
+
+              if (inserted.length > 0) {
+                badgesAwarded.push(unitBadge.name);
+              }
+            }
+          }
         }
       }
     }

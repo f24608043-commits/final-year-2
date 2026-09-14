@@ -76,6 +76,7 @@ export const units = pgTable(
     title: text("title").notNull(),
     description: text("description"),
     orderIndex: integer("order_index").notNull().default(0),
+    badgeId: uuid("badge_id").references(() => badges.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

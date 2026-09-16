@@ -1,6 +1,8 @@
 ﻿"use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { db } from "@/db";
+import { profiles } from "@/db/schema";
 import { redirect } from "next/navigation";
 
 export async function signUp(formData: FormData) {
@@ -25,6 +27,26 @@ export async function signUp(formData: FormData) {
 
   if (error) {
     redirect(`/sign-up?error=${encodeURIComponent(error.message)}`);
+  }
+
+  // Fallback: Manually create profile if trigger didn't work
+  if (data.user) {
+    const [existingProfile] = await db
+      .select()
+      .from(profiles)
+      .where((p) => p.id === data.user.id)
+      .limit(1);
+
+    if (!existingProfile) {
+      await db.insert(profiles).values({
+        id: data.user.id,
+        displayName: displayName || email.split("@")[0],
+        role: "learner",
+        xp: 0,
+        streakCount: 0,
+        onboardingDone: false,
+      });
+    }
   }
 
   const { error: signInError } = await supabase.auth.signInWithPassword({

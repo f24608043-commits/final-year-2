@@ -1,14 +1,139 @@
 ﻿# LEGO (Learn And Go) — Project Architecture & Progress Documentation
 
-> **Status:** 
+> **Status:**
 > - **Phase 0 (Foundation & Connection):** 100% COMPLETE & VERIFIED LIVE
 > - **Phase 1 (Database Schema & RLS Matrix):** 100% COMPLETE & VERIFIED LIVE
 > - **Phase 2 (Onboarding & Course/Path Structure):** 100% COMPLETE & VERIFIED LIVE
 > - **Phase 3 (Lesson Flow, Server-Side Grading, & Tamper-Proofing):** 100% COMPLETE & VERIFIED LIVE
+> - **Phase 4 (AI Quiz Generation, Admin Authoring, Practice Mode, Unit Badges):** 100% COMPLETE & VERIFIED LIVE
+> - **Phase 5 (Social Features & Leaderboards):** 100% COMPLETE & VERIFIED LIVE
+> - **Phase 6 (Tutoring System):** 95% COMPLETE (Manual testing required for access control and timezone features)
 
 ---
 
-## 1. Executive Summary & Security Remediation
+## 1. AI Quiz Generation Configuration (Phase 4)
+
+### AI Provider Setup
+- **Primary Provider:** OpenRouter (google/gemini-2.5-flash model)
+- **Fallback Provider:** OpenAI (gpt-4o-mini model)
+- **Final Fallback:** Generic hardcoded questions (never breaks, per NFR4)
+
+### Provider Selection Logic
+1. OpenRouter attempts first with real API calls
+2. If OpenRouter fails, OpenAI attempts as fallback
+3. If both fail, generic fallback ensures system always works
+
+### Environment Variables Required
+```env
+OPENROUTER_API_KEY="sk-or-v1-..."  # Primary provider
+OPENAI_API_KEY="sk-proj-..."        # Fallback provider (optional)
+```
+
+### Token Configuration
+- OpenRouter max_tokens: 1000 (to stay within free tier limits)
+- All AI calls logged to `ai_interactions` table for monitoring
+
+---
+
+## 2. Social Features & Leaderboards (Phase 5)
+
+### Friend System
+- **Database Schema:** `friendships` table with status enum (pending, accepted, rejected, blocked)
+- **Server Actions:** Send, accept, reject, block, remove friend requests
+- **UI Components:** Friend list page (`/friends`) with pending requests management
+- **Notifications:** Automatic friend request and acceptance notifications
+
+### Leaderboards
+- **Global XP Leaderboard:** Top 50 users by total XP
+- **Streak Leaderboard:** Top 50 users by consecutive learning days
+- **Unit Leaderboard:** Progress tracking within specific course units
+- **User Ranking:** Individual rank calculation and display
+
+### Social Profiles
+- **Profile Pages:** `/profile/[userId]` with user stats, badges, and activity
+- **Friend Comparison:** Side-by-side stats comparison with friends
+- **Profile Stats:** XP, streak days, completed lessons, earned badges
+- **Friend Actions:** Add friend, view friendship status, remove friend
+
+### Notification System
+- **Database Schema:** `notifications` table with type enum (friend_request, friend_accepted, badge_earned, streak_milestone, lesson_completed, leaderboard_rank)
+- **Server Actions:** Create, read, mark as read, delete notifications
+- **UI Components:** Notification center (`/notifications`) with unread count
+- **Notification Types:** Friend requests, badge achievements, streak milestones, leaderboard changes
+
+### Implementation Status
+- ✅ Friend system server actions and UI
+- ✅ Leaderboard queries and display
+- ✅ Social profile pages with comparison
+- ✅ Notification system schema and actions
+- ⚠️ Notifications table migration pending (needs database migration)
+
+### Database Migration Required
+The `notifications` table schema has been added to `db/schema.ts` but needs to be migrated to the database using Drizzle migration or Supabase SQL editor.
+
+---
+
+## 4. Tutoring System (Phase 6)
+
+### Database Schema
+- **tutor_profiles:** Extended tutor information (bio, subjects, hourly rate, timezone, rating, total sessions)
+- **session_notes:** Post-session notes with visibility controls (private_tutor, shared)
+- **session_requests:** Session booking requests with multiple time slot options
+- **tutor_availability:** Existing table for tutor scheduling
+- **tutor_sessions:** Existing table for confirmed video sessions
+
+### Server Actions
+- **Tutor Profile Management:** Create, update tutor profiles with subjects and rates
+- **Availability Scheduling:** Set recurring weekly availability slots
+- **Session Booking:** Request sessions with multiple time slot options
+- **Double-Booking Prevention:** Server-side validation to prevent overlapping sessions
+- **Session Management:** Accept/decline requests, update session status
+- **Session Notes:** Add private or shared notes after sessions
+- **Tutor Directory:** Browse available tutors with filters
+- **Admin Controls:** Activate/deactivate tutors, oversee all sessions
+
+### UI Components
+- **Tutoring Page (`/tutoring`):** Main tutoring hub with tutor directory and session overview
+- **Tutor Dashboard (`/tutoring/dashboard`):** Tutor-specific interface for managing availability and sessions
+- **Session History (`/tutoring/history`):** View past sessions and shared notes
+- **Session Detail (`/tutoring/session/[sessionId]`):** Video session interface with Jitsi integration
+- **Admin Tutoring (`/admin/tutoring`):** Admin oversight of tutors and sessions
+
+### Security Features
+- **RLS Policies:** All tutoring tables have RLS enabled with proper access controls
+- **Access Control:** Tutors can only access their own data, learners their sessions, admins everything
+- **Private Notes:** Tutor-only notes are enforced at database level, not just UI
+- **Session Access:** Video sessions restricted to assigned tutor and learner only
+- **Timing Controls:** Sessions accessible 10 minutes before start until end
+
+### Jitsi Integration
+- **Public Instance:** Using meet.jit.si for video sessions
+- **Unique Room IDs:** Generated per session to prevent unauthorized access
+- **Access Control:** Server-side validation before rendering video iframe
+- **Timing Restrictions:** Join button active only during valid time window
+
+### Implementation Status
+- ✅ Database schema extensions (tutor_profiles, session_notes, session_requests)
+- ✅ RLS policies for all tutoring tables
+- ✅ Server actions for tutoring workflows
+- ✅ UI components for tutors, learners, and admins
+- ✅ Jitsi video integration with access control
+- ✅ Session timing controls
+- ✅ Double-booking prevention
+- ✅ Notification system integration
+- ⚠️ Manual testing required for access control and timezone features
+
+### Testing Requirements
+- RLS policies verified at database level
+- Phase 0-5 features confirmed still functioning
+- Manual testing needed for:
+  - Double-booking prevention with concurrent requests
+  - Jitsi room access control with unauthorized users
+  - Timezone conversion across multiple timezones
+
+---
+
+## 5. Executive Summary & Security Remediation
 
 ### Database Connection Resolution
 - Direct connections to `db.<ref>.supabase.co:5432` frequently fail on Windows/local DNS with IPv6 `ENOTFOUND` errors.

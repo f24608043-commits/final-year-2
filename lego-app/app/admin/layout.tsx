@@ -36,10 +36,19 @@ export default async function AdminLayout({
           <div className="flex items-center gap-3">
             <span className="text-lg font-extrabold text-blue-700">🎓 LEGO Admin</span>
             <nav className="hidden items-center gap-4 sm:flex">
+              <Link href="/admin/users" className="text-sm font-medium text-gray-600 hover:text-blue-600">
+                Users
+              </Link>
+              <Link href="/admin/badges" className="text-sm font-medium text-gray-600 hover:text-blue-600">
+                Badges
+              </Link>
               <Link href="/admin/courses" className="text-sm font-medium text-gray-600 hover:text-blue-600">
                 Courses
               </Link>
-              <Link href="/path" className="text-sm font-medium text-gray-600 hover:text-blue-600">
+              <Link href="/admin/tutoring" className="text-sm font-medium text-gray-600 hover:text-blue-600">
+                Tutoring
+              </Link>
+              <Link href="/" className="text-sm font-medium text-gray-600 hover:text-blue-600">
                 ← Back to App
               </Link>
             </nav>

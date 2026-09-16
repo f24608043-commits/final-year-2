@@ -124,7 +124,53 @@ Requirements:
   }
 
   // ──────────────────────────────────────────────────────────
-  // ATTEMPT 1: OpenAI (Primary)
+  // ATTEMPT 1: OpenRouter (Primary)
+  // ──────────────────────────────────────────────────────────
+  if (!simulateOpenRouterFailure && process.env.OPENROUTER_API_KEY && process.env.OPENROUTER_API_KEY !== "sk-or-v1-mock-fallback-key") {
+    const startTime = Date.now();
+    try {
+      const openRouterClient = new OpenAI({
+        baseURL: "https://openrouter.ai/api/v1",
+        apiKey: process.env.OPENROUTER_API_KEY,
+      });
+
+      const response = await openRouterClient.chat.completions.create({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: "You output only valid JSON arrays of quiz questions." },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      });
+
+      const latencyMs = Date.now() - startTime;
+      const rawContent = response.choices[0]?.message?.content || "";
+      const parsed = JSON.parse(cleanJsonText(rawContent));
+      const candidateArray = Array.isArray(parsed)
+        ? parsed
+        : parsed.questions || parsed.data || Object.values(parsed)[0];
+
+      const validated = QuizGenerationOutputSchema.parse(candidateArray);
+
+      await logAttempt("openrouter", true, latencyMs, validated);
+
+      return {
+        questions: validated.slice(0, count),
+        provider: "openrouter",
+        usedFallback: false,
+      };
+    } catch (err: any) {
+      const latencyMs = Date.now() - startTime;
+      await logAttempt("openrouter", false, latencyMs, null, err.message);
+      console.warn("OpenRouter generation failed, proceeding to OpenAI fallback:", err.message);
+    }
+  } else {
+    await logAttempt("openrouter", false, 40, null, "OpenRouter key unavailable or simulated fallback");
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // ATTEMPT 2: OpenAI (Fallback)
   // ──────────────────────────────────────────────────────────
   if (!simulateOpenAiFailure && process.env.OPENAI_API_KEY) {
     const startTime = Date.now();
@@ -155,61 +201,15 @@ Requirements:
       return {
         questions: validated.slice(0, count),
         provider: "openai",
-        usedFallback: false,
-      };
-    } catch (err: any) {
-      const latencyMs = Date.now() - startTime;
-      await logAttempt("openai", false, latencyMs, null, err.message);
-      console.warn("OpenAI generation failed, proceeding to OpenRouter fallback:", err.message);
-    }
-  } else if (simulateOpenAiFailure) {
-    await logAttempt("openai", false, 50, null, "Simulated OpenAI API Failure");
-  }
-
-  // ──────────────────────────────────────────────────────────
-  // ATTEMPT 2: OpenRouter (Fallback)
-  // ──────────────────────────────────────────────────────────
-  if (!simulateOpenRouterFailure && process.env.OPENROUTER_API_KEY && process.env.OPENROUTER_API_KEY !== "sk-or-v1-mock-fallback-key") {
-    const startTime = Date.now();
-    try {
-      const openRouterClient = new OpenAI({
-        baseURL: "https://openrouter.ai/api/v1",
-        apiKey: process.env.OPENROUTER_API_KEY,
-      });
-
-      const response = await openRouterClient.chat.completions.create({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: "You output only valid JSON arrays of quiz questions." },
-          { role: "user", content: prompt },
-        ],
-        temperature: 0.7,
-      });
-
-      const latencyMs = Date.now() - startTime;
-      const rawContent = response.choices[0]?.message?.content || "";
-      const parsed = JSON.parse(cleanJsonText(rawContent));
-      const candidateArray = Array.isArray(parsed)
-        ? parsed
-        : parsed.questions || parsed.data || Object.values(parsed)[0];
-
-      const validated = QuizGenerationOutputSchema.parse(candidateArray);
-
-      await logAttempt("openrouter", true, latencyMs, validated);
-
-      return {
-        questions: validated.slice(0, count),
-        provider: "openrouter",
         usedFallback: true,
       };
     } catch (err: any) {
       const latencyMs = Date.now() - startTime;
-      await logAttempt("openrouter", false, latencyMs, null, err.message);
-      console.warn("OpenRouter fallback failed:", err.message);
+      await logAttempt("openai", false, latencyMs, null, err.message);
+      console.warn("OpenAI fallback failed:", err.message);
     }
-  } else {
-    // If OpenRouter key is simulated failure or mock
-    await logAttempt("openrouter", false, 40, null, "OpenRouter key unavailable or simulated fallback");
+  } else if (simulateOpenAiFailure) {
+    await logAttempt("openai", false, 50, null, "Simulated OpenAI API Failure");
   }
 
   // ──────────────────────────────────────────────────────────

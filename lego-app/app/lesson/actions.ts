@@ -14,6 +14,7 @@ import {
   userProgress,
 } from "@/db/schema";
 import { and, count, eq, inArray, sql } from "drizzle-orm";
+import { checkAndAwardBadges } from "@/app/gamification/actions";
 
 export interface QuizSubmissionResult {
   success: boolean;
@@ -176,64 +177,11 @@ export async function submitQuiz(
       })
       .onConflictDoNothing();
 
-    // 8. Check and award badges
-    // a. "First Step" (first_lesson)
-    const [firstStepBadge] = await db
-      .select()
-      .from(badges)
-      .where(eq(badges.criteriaType, "first_lesson"))
-      .limit(1);
+    // 8. Check and award general badges
+    const generalBadges = await checkAndAwardBadges(user.id);
+    badgesAwarded.push(...generalBadges);
 
-    if (firstStepBadge) {
-      const inserted = await db
-        .insert(userBadges)
-        .values({
-          userId: user.id,
-          badgeId: firstStepBadge.id,
-        })
-        .onConflictDoNothing()
-        .returning();
-
-      if (inserted.length > 0) {
-        badgesAwarded.push(firstStepBadge.name);
-      }
-    }
-
-    // b. "Level Up" (10 lessons completed)
-    const [lessonsCompletedBadge] = await db
-      .select()
-      .from(badges)
-      .where(eq(badges.criteriaType, "lessons_completed"))
-      .limit(1);
-
-    if (lessonsCompletedBadge) {
-      const [{ count: completedCount }] = await db
-        .select({ count: count() })
-        .from(userProgress)
-        .where(
-          and(
-            eq(userProgress.userId, user.id),
-            eq(userProgress.status, "completed")
-          )
-        );
-
-      if (completedCount >= lessonsCompletedBadge.criteriaValue) {
-        const inserted = await db
-          .insert(userBadges)
-          .values({
-            userId: user.id,
-            badgeId: lessonsCompletedBadge.id,
-          })
-          .onConflictDoNothing()
-          .returning();
-
-        if (inserted.length > 0) {
-          badgesAwarded.push(lessonsCompletedBadge.name);
-        }
-      }
-    }
-
-    // c. Unit completion badge (FR9.1d)
+    // 9. Unit completion badge (FR9.1d) - special case not in general function
     // Check if ALL lessons in this lesson's unit are now completed by this user
     const [thisLesson] = await db
       .select({ unitId: lessons.unitId })

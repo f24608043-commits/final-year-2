@@ -241,7 +241,25 @@ export const friendStreaks = pgTable("friend_streaks", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// ── 15. TUTOR_AVAILABILITY ────────────────────────────────
+// ── 15. TUTOR_PROFILES ────────────────────────────────────
+export const tutorProfiles = pgTable("tutor_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tutorId: uuid("tutor_id")
+    .notNull()
+    .unique()
+    .references(() => profiles.id, { onDelete: "cascade" }),
+  bio: text("bio"),
+  subjects: text("subjects").array(), // Array of subjects/units they teach
+  hourlyRate: integer("hourly_rate"), // Nullable if free
+  timezone: text("timezone").notNull().default("UTC"),
+  isActive: boolean("is_active").notNull().default(true),
+  rating: integer("rating").default(0), // 0-5 scale
+  totalSessions: integer("total_sessions").default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 16. TUTOR_AVAILABILITY ────────────────────────────────
 export const tutorAvailability = pgTable("tutor_availability", {
   id: uuid("id").primaryKey().defaultRandom(),
   tutorId: uuid("tutor_id")
@@ -254,7 +272,7 @@ export const tutorAvailability = pgTable("tutor_availability", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// ── 16. TUTOR_SESSIONS ────────────────────────────────────
+// ── 17. TUTOR_SESSIONS ────────────────────────────────────
 export const tutorSessions = pgTable("tutor_sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
   learnerId: uuid("learner_id")
@@ -269,6 +287,40 @@ export const tutorSessions = pgTable("tutor_sessions", {
   status: sessionStatusEnum("status").notNull().default("requested"),
   jitsiRoomId: text("jitsi_room_id"),
   notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 18. SESSION_NOTES ──────────────────────────────────────
+export const sessionNotesEnum = pgEnum("session_notes_visibility", ["private_tutor", "shared"]);
+
+export const sessionNotes = pgTable("session_notes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  sessionId: uuid("session_id")
+    .notNull()
+    .references(() => tutorSessions.id, { onDelete: "cascade" }),
+  authorId: uuid("author_id")
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" }),
+  noteText: text("note_text").notNull(),
+  visibility: sessionNotesEnum("visibility").notNull().default("shared"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 19. SESSION_REQUESTS ───────────────────────────────────
+export const sessionRequestStatusEnum = pgEnum("session_request_status", ["pending", "accepted", "declined"]);
+
+export const sessionRequests = pgTable("session_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  learnerId: uuid("learner_id")
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" }),
+  tutorId: uuid("tutor_id")
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" }),
+  requestedSlots: jsonb("requested_slots").notNull(), // Array of requested time slots
+  status: sessionRequestStatusEnum("status").notNull().default("pending"),
+  message: text("message"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -298,3 +350,29 @@ export const aiInteractions = pgTable("ai_interactions", {
   errorMsg: text("error_msg"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ── 19. NOTIFICATIONS ───────────────────────────────────────
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "friend_request",
+  "friend_accepted",
+  "badge_earned",
+  "streak_milestone",
+  "lesson_completed",
+  "leaderboard_rank",
+]);
+
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    type: notificationTypeEnum("type").notNull(),
+    title: text("title").notNull(),
+    message: text("message").notNull(),
+    data: jsonb("data"),
+    isRead: boolean("is_read").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+);

@@ -4,9 +4,9 @@ import { courses, enrollments, lessons, profiles, units, userProgress } from "@/
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { signOut } from "../auth/actions";
 
 export default async function PathPage() {
+  const startTime = Date.now();
   const supabase = await createClient();
   const {
     data: { user },
@@ -16,26 +16,31 @@ export default async function PathPage() {
     redirect("/sign-in");
   }
 
-  // 1. Verify user profile and onboarding status
-  const [profile] = await db
-    .select()
-    .from(profiles)
-    .where(eq(profiles.id, user.id))
-    .limit(1);
+  // 1. Verify user profile and onboarding status AND fetch enrollments in parallel
+  const [profileResult, userEnrollments] = await Promise.all([
+    db.select().from(profiles).where(eq(profiles.id, user.id)).limit(1),
+    db.select().from(enrollments).where(eq(enrollments.userId, user.id))
+  ]);
 
-  if (!profile || !profile.onboardingDone) {
+  const profile = profileResult[0];
+
+  console.log("[PATH] Profile:", profile ? { id: profile.id, onboardingDone: profile.onboardingDone, role: profile.role } : "NOT FOUND");
+  console.log("[PATH] Enrollments count:", userEnrollments.length);
+
+  if (!profile) {
+    console.error("[PATH] Profile not found for user:", user.id);
     redirect("/onboarding");
   }
 
-  // 2. Fetch active course enrollment
-  const userEnrollments = await db
-    .select()
-    .from(enrollments)
-    .where(eq(enrollments.userId, user.id));
+  if (!profile.onboardingDone) {
+    console.log("[PATH] Onboarding not done, redirecting to onboarding");
+    redirect("/onboarding");
+  }
 
   const activeEnrollment = userEnrollments.find((e) => e.isActive) || userEnrollments[0];
 
   if (!activeEnrollment) {
+    console.log("[PATH] No enrollment found, redirecting to onboarding");
     redirect("/onboarding");
   }
 
@@ -59,30 +64,35 @@ export default async function PathPage() {
 
   const unitIds = courseUnits.map((u) => u.id);
 
-  // 5. Fetch all lessons across these units ordered by orderIndex
-  const courseLessons = unitIds.length > 0
-    ? await db
-        .select()
-        .from(lessons)
-        .where(inArray(lessons.unitId, unitIds))
-        .orderBy(asc(lessons.orderIndex))
-    : [];
-
-  // 6. Fetch user progress for these lessons
-  const lessonIds = courseLessons.map((l) => l.id);
-  const progressRows = lessonIds.length > 0
-    ? await db
-        .select()
-        .from(userProgress)
-        .where(
-          and(
-            eq(userProgress.userId, user.id),
-            inArray(userProgress.lessonId, lessonIds)
+  // 5. Fetch lessons and progress in parallel (they're independent)
+  const [courseLessons, progressRows] = await Promise.all([
+    unitIds.length > 0
+      ? db
+          .select()
+          .from(lessons)
+          .where(inArray(lessons.unitId, unitIds))
+          .orderBy(asc(lessons.orderIndex))
+      : Promise.resolve([]),
+    unitIds.length > 0
+      ? db
+          .select()
+          .from(userProgress)
+          .where(
+            and(
+              eq(userProgress.userId, user.id),
+              inArray(userProgress.lessonId, unitIds) // Will filter by actual lesson IDs after
+            )
           )
-        )
-    : [];
+      : Promise.resolve([])
+  ]);
 
-  const progressMap = new Map(progressRows.map((p) => [p.lessonId, p.status]));
+  const lessonIds = courseLessons.map((l) => l.id);
+  const filteredProgressRows = progressRows.filter(p => lessonIds.includes(p.lessonId));
+
+  const progressMap = new Map(filteredProgressRows.map((p) => [p.lessonId, p.status]));
+
+  const endTime = Date.now();
+  console.log(`[PERF] Path page server render time: ${endTime - startTime}ms`);
 
   // 7. Compute deterministic state machine chain based on real DB progress
   // Order units and lessons globally:
@@ -117,148 +127,127 @@ export default async function PathPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16">
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🧱</span>
-            <div>
-              <h1 className="text-base font-bold text-gray-900">{course.title}</h1>
-              <p className="text-xs text-gray-500">Learning Path</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Gamification Stats */}
-            <div className="flex items-center gap-3 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-              <span title="Current XP">⚡ {profile.xp} XP</span>
-              <span className="text-gray-300">|</span>
-              <span title="Day Streak">🔥 {profile.streakCount} d</span>
-            </div>
-
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100"
-              >
-                Sign Out
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Path Progression */}
-      <main className="mx-auto max-w-2xl px-4 pt-8">
-        <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50/70 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Active Course</span>
-              <h2 className="text-xl font-bold text-gray-900">{course.title}</h2>
-            </div>
-            <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white">
-              Level {orderedLessonsWithUnit.findIndex((i) => i.state === "current") + 1} of {orderedLessonsWithUnit.length}
+    <div className="p-6 lg:p-8">
+      {/* Course Header */}
+      <div className="mb-8 rounded-2xl border border-[var(--border-light)] bg-[var(--background-card)] p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <span className="inline-block rounded-full bg-[var(--brand-primary-light)] px-3 py-1 text-xs font-bold text-[var(--brand-primary-dark)] mb-2">
+              Active Course
             </span>
+            <h1 className="text-2xl font-bold text-[var(--foreground)]">{course.title}</h1>
+            <p className="mt-1 text-sm text-[var(--foreground-secondary)]">{course.description}</p>
           </div>
-          <p className="mt-1 text-xs text-gray-600">{course.description}</p>
+          <div className="flex items-center gap-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-[var(--brand-primary)]">
+                {orderedLessonsWithUnit.filter(i => i.state === "completed").length}
+              </div>
+              <div className="text-xs text-[var(--foreground-muted)]">Completed</div>
+            </div>
+            <div className="h-10 w-px bg-[var(--border)]"></div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-[var(--foreground)]">
+                {orderedLessonsWithUnit.length}
+              </div>
+              <div className="text-xs text-[var(--foreground-muted)]">Total Lessons</div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Units and Lessons Chain */}
-        <div className="space-y-8">
-          {courseUnits.map((unit, unitIdx) => {
-            const unitItems = orderedLessonsWithUnit.filter((i) => i.unit.id === unit.id);
+      {/* Units and Lessons */}
+      <div className="space-y-6">
+        {courseUnits.map((unit, unitIdx) => {
+          const unitItems = orderedLessonsWithUnit.filter((i) => i.unit.id === unit.id);
+          const completedInUnit = unitItems.filter(i => i.state === "completed").length;
 
-            return (
-              <div key={unit.id} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                {/* Unit Header */}
-                <div className="mb-6 border-b border-gray-100 pb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-blue-600 px-2 py-0.5 text-xs font-bold text-white">
-                      UNIT {unitIdx + 1}
-                    </span>
-                    <h3 className="text-lg font-bold text-gray-900">{unit.title}</h3>
+          return (
+            <div key={unit.id} className="rounded-2xl border border-[var(--border)] bg-[var(--background-card)] overflow-hidden shadow-sm">
+              {/* Unit Header */}
+              <div className="border-b border-[var(--border-light)] bg-[var(--background-secondary)] p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--brand-primary)] text-white font-bold">
+                      {unitIdx + 1}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[var(--foreground)]">{unit.title}</h3>
+                      <p className="text-xs text-[var(--foreground-secondary)]">
+                        {completedInUnit}/{unitItems.length} lessons completed
+                      </p>
+                    </div>
                   </div>
-                  {unit.description && (
-                    <p className="mt-1 text-xs text-gray-500">{unit.description}</p>
-                  )}
+                  <div className="h-2 w-24 rounded-full bg-[var(--border-light)] overflow-hidden">
+                    <div
+                      className="h-full bg-[var(--success)] transition-all"
+                      style={{ width: `${(completedInUnit / unitItems.length) * 100}%` }}
+                    />
+                  </div>
                 </div>
+              </div>
 
-                {/* Lesson Nodes Chain */}
-                <div className="relative flex flex-col items-center gap-6">
-                  {unitItems.map((item, lessonIdx) => {
-                    const { lesson, state } = item;
-                    const isCompleted = state === "completed";
-                    const isCurrent = state === "current";
-                    const isLocked = state === "locked";
+              {/* Lessons List */}
+              <div className="divide-y divide-[var(--border-light)]">
+                {unitItems.map((item, lessonIdx) => {
+                  const { lesson, state } = item;
+                  const isCompleted = state === "completed";
+                  const isCurrent = state === "current";
+                  const isLocked = state === "locked";
 
-                    return (
-                      <div key={lesson.id} className="flex w-full max-w-md items-center gap-4">
-                        {/* Node Circle Indicator */}
-                        <div className="relative flex flex-col items-center">
-                          <div
-                            className={`flex h-14 w-14 items-center justify-center rounded-full text-lg font-bold transition-all shadow-md ${
-                              isCompleted
-                                ? "bg-green-500 text-white ring-4 ring-green-100"
-                                : isCurrent
-                                ? "bg-blue-600 text-white ring-4 ring-blue-100 scale-105 animate-pulse"
-                                : "bg-gray-200 text-gray-400"
-                            }`}
-                          >
-                            {isCompleted ? "✓" : isCurrent ? "▶" : "🔒"}
-                          </div>
-                        </div>
-
-                        {/* Lesson Card */}
+                  return (
+                    <Link
+                      key={lesson.id}
+                      href={isLocked ? "#" : `/lesson/${lesson.id}`}
+                      className={`block p-4 transition-colors ${
+                        isLocked ? "opacity-50 cursor-not-allowed" : "hover:bg-[var(--background-secondary)]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        {/* Status Icon */}
                         <div
-                          className={`flex-1 rounded-xl border p-4 transition-all ${
-                            isCurrent
-                              ? "border-blue-400 bg-blue-50/30 shadow-sm ring-1 ring-blue-400"
-                              : isCompleted
-                              ? "border-gray-200 bg-white hover:border-gray-300"
-                              : "border-gray-200 bg-gray-50/50 opacity-60"
+                          className={`flex h-12 w-12 items-center justify-center rounded-full text-lg ${
+                            isCompleted
+                              ? "bg-[var(--success-light)] text-[var(--success)]"
+                              : isCurrent
+                              ? "bg-[var(--brand-primary)] text-white"
+                              : "bg-[var(--background-secondary)] text-[var(--foreground-muted)]"
                           }`}
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                          {isCompleted ? "✓" : isCurrent ? "▶" : "🔒"}
+                        </div>
+
+                        {/* Lesson Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-semibold text-[var(--foreground-muted)] uppercase">
                               Lesson {lessonIdx + 1}
                             </span>
                             <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-bold text-yellow-800">
                               +{lesson.xpReward} XP
                             </span>
                           </div>
-
-                          <h4 className="mt-1 font-bold text-gray-900">{lesson.title}</h4>
-                          <p className="mt-1 text-xs text-gray-500 line-clamp-2">{lesson.description}</p>
-
-                          <div className="mt-3">
-                            {isLocked ? (
-                              <span className="text-xs font-medium text-gray-400">
-                                Complete previous level to unlock
-                              </span>
-                            ) : (
-                              <Link
-                                href={`/lesson/${lesson.id}`}
-                                className={`inline-block rounded-lg px-4 py-1.5 text-xs font-bold transition-colors ${
-                                  isCurrent
-                                    ? "bg-blue-600 text-white hover:bg-blue-700 shadow"
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                }`}
-                              >
-                                {isCompleted ? "Review Lesson" : "Start Lesson"}
-                              </Link>
-                            )}
-                          </div>
+                          <h4 className="font-semibold text-[var(--foreground)] truncate">{lesson.title}</h4>
+                          <p className="text-sm text-[var(--foreground-secondary)] line-clamp-1">{lesson.description}</p>
                         </div>
+
+                        {/* Arrow */}
+                        {!isLocked && (
+                          <div className="text-[var(--foreground-muted)]">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        )}
                       </div>
-                    );
-                  })}
-                </div>
+                    </Link>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-      </main>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

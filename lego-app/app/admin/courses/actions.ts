@@ -5,7 +5,6 @@ import { courses, units, lessons, profiles } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { randomUUID } from "crypto";
 
 // Helper: Verify current user is admin
 async function verifyAdmin() {
@@ -39,8 +38,8 @@ export async function createCourse(data: {
   const [course] = await db
     .insert(courses)
     .values({
-      id: randomUUID(),
-      ...data,
+      title: data.name,
+      description: data.description,
     })
     .returning();
 
@@ -59,8 +58,10 @@ export async function createUnit(data: {
   const [unit] = await db
     .insert(units)
     .values({
-      id: randomUUID(),
-      ...data,
+      courseId: data.courseId,
+      title: data.name,
+      description: data.description,
+      orderIndex: data.order,
     })
     .returning();
 
@@ -81,8 +82,12 @@ export async function createLesson(data: {
   const [lesson] = await db
     .insert(lessons)
     .values({
-      id: randomUUID(),
-      ...data,
+      unitId: data.unitId,
+      title: data.title,
+      description: data.description,
+      youtubeVideoId: data.videoUrl,
+      xpReward: data.xpReward,
+      orderIndex: data.order,
     })
     .returning();
 
@@ -92,7 +97,7 @@ export async function createLesson(data: {
 
 export async function getAllCourses() {
   await verifyAdmin();
-  return await db.select().from(courses).orderBy(courses.name);
+  return await db.select().from(courses).orderBy(courses.title);
 }
 
 export async function getCourseUnits(courseId: string) {
@@ -101,7 +106,7 @@ export async function getCourseUnits(courseId: string) {
     .select()
     .from(units)
     .where(eq(units.courseId, courseId))
-    .orderBy(units.order);
+    .orderBy(units.orderIndex);
 }
 
 export async function getUnitLessons(unitId: string) {
@@ -110,5 +115,5 @@ export async function getUnitLessons(unitId: string) {
     .select()
     .from(lessons)
     .where(eq(lessons.unitId, unitId))
-    .orderBy(lessons.order);
+    .orderBy(lessons.orderIndex);
 }

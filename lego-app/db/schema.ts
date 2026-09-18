@@ -36,6 +36,7 @@ export const sessionStatusEnum = pgEnum("session_status", [
   "declined",
   "cancelled",
   "completed",
+  "no_show",
 ]);
 
 // ── 2. PROFILES (Extends Supabase auth.users) ─────────────

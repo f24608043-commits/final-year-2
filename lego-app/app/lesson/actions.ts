@@ -25,6 +25,9 @@ export interface QuizSubmissionResult {
   xpAwarded: number;
   badgesAwarded: string[];
   message?: string;
+  totalXP?: number;
+  lessonsCompleted?: number;
+  streakDays?: number;
 }
 
 export async function submitQuiz(
@@ -259,6 +262,23 @@ export async function submitQuiz(
       });
   }
 
+  // Fetch additional stats for celebration
+  const [profileStats] = await db
+    .select({ xp: profiles.xp, streakCount: profiles.streakCount })
+    .from(profiles)
+    .where(eq(profiles.id, user.id))
+    .limit(1);
+
+  const [{ count: lessonsCompleted }] = await db
+    .select({ count: count() })
+    .from(userProgress)
+    .where(
+      and(
+        eq(userProgress.userId, user.id),
+        eq(userProgress.status, "completed")
+      )
+    );
+
   return {
     success: true,
     passed,
@@ -267,5 +287,8 @@ export async function submitQuiz(
     correctCount,
     xpAwarded: passed ? lesson.xpReward : 0,
     badgesAwarded,
+    totalXP: profileStats?.xp || 0,
+    lessonsCompleted: Number(lessonsCompleted) || 0,
+    streakDays: profileStats?.streakCount || 0,
   };
 }

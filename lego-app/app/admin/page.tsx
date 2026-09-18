@@ -4,25 +4,25 @@ import { count, eq } from "drizzle-orm";
 import Link from "next/link";
 
 export default async function AdminDashboard() {
-  const allCourses = await db
-    .select({
-      id: courses.id,
-      title: courses.title,
-      isPublished: courses.isPublished,
-    })
-    .from(courses)
-    .orderBy(courses.createdAt);
-
-  const unitCounts = await db
-    .select({ courseId: units.courseId, count: count() })
-    .from(units)
-    .groupBy(units.courseId);
-
-  const lessonCounts = await db
-    .select({ courseId: units.courseId, count: count() })
-    .from(lessons)
-    .innerJoin(units, eq(lessons.unitId, units.id))
-    .groupBy(units.courseId);
+  const [allCourses, unitCounts, lessonCounts] = await Promise.all([
+    db
+      .select({
+        id: courses.id,
+        title: courses.title,
+        isPublished: courses.isPublished,
+      })
+      .from(courses)
+      .orderBy(courses.createdAt),
+    db
+      .select({ courseId: units.courseId, count: count() })
+      .from(units)
+      .groupBy(units.courseId),
+    db
+      .select({ courseId: units.courseId, count: count() })
+      .from(lessons)
+      .innerJoin(units, eq(lessons.unitId, units.id))
+      .groupBy(units.courseId)
+  ]);
 
   const unitMap = new Map(unitCounts.map((u) => [u.courseId, Number(u.count)]));
   const lessonMap = new Map(lessonCounts.map((l) => [l.courseId, Number(l.count)]));

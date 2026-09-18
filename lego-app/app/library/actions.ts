@@ -40,18 +40,18 @@ export async function getLibraryLessons() {
       id: lessons.id,
       title: lessons.title,
       description: lessons.description,
-      videoUrl: lessons.videoUrl,
+      videoUrl: lessons.youtubeVideoId,
       xpReward: lessons.xpReward,
       unitId: lessons.unitId,
       courseId: units.courseId,
-      courseName: courses.name,
-      unitName: units.name,
+      courseName: courses.title,
+      unitName: units.title,
     })
     .from(lessons)
     .innerJoin(units, eq(lessons.unitId, units.id))
     .innerJoin(courses, eq(units.courseId, courses.id))
     .where(inArray(lessons.unitId, unitIds))
-    .orderBy(lessons.order);
+    .orderBy(lessons.orderIndex);
 
   return libraryLessons;
 }

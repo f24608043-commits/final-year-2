@@ -1,57 +1,55 @@
 import { getLibraryLessons } from "./actions";
 import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function LibraryPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
-    return (
-      <div className="container mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-4">Library</h1>
-        <p>Please sign in to access the library.</p>
-      </div>
-    );
+    redirect("/sign-in");
   }
 
   const libraryLessons = await getLibraryLessons();
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Video Library</h1>
-        <p className="text-gray-600">
+    <div className="p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Video Library</h1>
+        <p className="mt-1 text-sm text-[var(--foreground-secondary)]">
           Watch lesson videos without completing quizzes. Progress is not tracked in the Library.
         </p>
       </div>
 
       {libraryLessons.length === 0 ? (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <p className="text-yellow-800">
+        <div className="rounded-xl border border-[var(--warning)] bg-[var(--warning-light)] p-8 text-center">
+          <div className="text-4xl mb-3">📚</div>
+          <p className="text-[var(--warning)]">
             No lessons available. Enroll in a course to access the library.
           </p>
         </div>
       ) : (
         <div className="space-y-6">
           {libraryLessons.map((lesson: any) => (
-            <div key={lesson.id} className="bg-white rounded-lg shadow border p-6">
+            <div key={lesson.id} className="rounded-xl border border-[var(--border)] bg-[var(--background-card)] p-6 shadow-sm">
               <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h2 className="text-xl font-semibold">{lesson.title}</h2>
-                  <p className="text-sm text-gray-500 mt-1">
+                <div className="min-w-0">
+                  <h2 className="text-lg font-semibold text-[var(--foreground)]">{lesson.title}</h2>
+                  <p className="text-sm text-[var(--foreground-muted)] mt-1">
                     {lesson.courseName} • {lesson.unitName}
                   </p>
-                  <p className="text-sm text-gray-600 mt-2">{lesson.description}</p>
-                  <p className="text-sm text-purple-600 mt-1">{lesson.xpReward} XP (if completed via quiz)</p>
+                  <p className="text-sm text-[var(--foreground-secondary)] mt-2">{lesson.description}</p>
+                  <p className="text-sm text-[var(--brand-primary)] mt-1 font-medium">{lesson.xpReward} XP (if completed via quiz)</p>
                 </div>
               </div>
 
               {lesson.videoUrl ? (
-                <div className="aspect-video bg-black rounded-lg overflow-hidden">
+                <div className="aspect-video bg-black rounded-xl overflow-hidden">
                   <video
                     controls
                     className="w-full h-full"
-                    src={lesson.videoUrl}
+                    src={`https://www.youtube.com/watch?v=${lesson.videoUrl}`}
                     onPlay={async () => {
                       // Record library view when video starts
                       const { recordLibraryView } = await import("./actions");
@@ -62,12 +60,13 @@ export default async function LibraryPage() {
                   </video>
                 </div>
               ) : (
-                <div className="bg-gray-100 rounded-lg p-8 text-center">
-                  <p className="text-gray-500">No video available for this lesson</p>
+                <div className="rounded-xl bg-[var(--background-secondary)] p-8 text-center">
+                  <div className="text-4xl mb-3">🎬</div>
+                  <p className="text-[var(--foreground-muted)]">No video available for this lesson</p>
                 </div>
               )}
 
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+              <div className="mt-4 rounded-lg border border-[var(--info)] bg-[var(--info-light)] p-4 text-sm text-[var(--info)]">
                 <strong>Library Mode:</strong> Watching here does not track progress or award XP.
                 Complete the quiz in the lesson page to earn XP and track progress.
               </div>

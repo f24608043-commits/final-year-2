@@ -31,18 +31,21 @@ async function verifyAdmin() {
 export async function getAllUsers(searchQuery: string = "") {
   await verifyAdmin();
 
-  let query = db.select().from(profiles);
-
   if (searchQuery) {
-    query = query.where(
-      or(
-        ilike(profiles.displayName, `%${searchQuery}%`),
-        ilike(profiles.role, `%${searchQuery}%`)
+    return await db
+      .select()
+      .from(profiles)
+      .where(
+        or(
+          ilike(profiles.displayName, `%${searchQuery}%`),
+          ilike(profiles.role, `%${searchQuery}%`)
+        )
       )
-    );
+      .orderBy(profiles.displayName)
+      .limit(50);
   }
 
-  const users = await query.orderBy(profiles.displayName).limit(50);
+  const users = await db.select().from(profiles).orderBy(profiles.displayName).limit(50);
   return users;
 }
 

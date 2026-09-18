@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { tutorProfiles, tutorAvailability, tutorSessions, sessionRequests, sessionNotes, profiles } from "@/db/schema";
 import { eq, and, or, desc, inArray, gte, lte } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
@@ -201,7 +202,7 @@ export async function acceptSessionRequest(requestId: string, selectedSlotIndex:
     throw new Error("Request not found or unauthorized");
   }
 
-  const selectedSlot = request.requestedSlots[selectedSlotIndex];
+  const selectedSlot = (request.requestedSlots as any)[selectedSlotIndex];
   if (!selectedSlot) {
     throw new Error("Invalid slot selection");
   }
@@ -419,9 +420,10 @@ export async function getTutors(filters?: {
   subject?: string;
   minRating?: number;
 }) {
-  let query = db
+  const tutors = await db
     .select({
-      id: tutorProfiles.tutorId,
+      id: tutorProfiles.id,
+      tutorId: tutorProfiles.tutorId,
       bio: tutorProfiles.bio,
       subjects: tutorProfiles.subjects,
       hourlyRate: tutorProfiles.hourlyRate,
@@ -433,21 +435,22 @@ export async function getTutors(filters?: {
     })
     .from(tutorProfiles)
     .innerJoin(profiles, eq(tutorProfiles.tutorId, profiles.id))
-    .where(eq(tutorProfiles.isActive, true));
+    .where(eq(tutorProfiles.isActive, true))
+    .orderBy(desc(tutorProfiles.rating));
 
+  // Filter by subject if provided (client-side filter for simplicity)
   if (filters?.subject) {
-    query = query.where(
-      // Check if subject is in the subjects array
-      // This is a simplified check - in production you'd use proper array operators
-      eq(tutorProfiles.subjects, [filters.subject])
+    return tutors.filter((tutor) =>
+      tutor.subjects?.includes(filters.subject!)
     );
   }
 
+  // Filter by minimum rating if provided
   if (filters?.minRating) {
-    query = query.where(gte(tutorProfiles.rating, filters.minRating));
+    return tutors.filter((tutor) =>
+      (tutor.rating || 0) >= filters.minRating!
+    );
   }
-
-  const tutors = await query.orderBy(desc(tutorProfiles.rating));
 
   return tutors;
 }

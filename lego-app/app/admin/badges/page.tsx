@@ -32,7 +32,7 @@ export default async function AdminBadgesPage() {
             name: formData.get("name") as string,
             description: formData.get("description") as string,
             icon: formData.get("icon") as string,
-            criteriaType: formData.get("criteriaType") as string,
+            criteriaType: formData.get("criteriaType") as "first_lesson" | "lessons_completed" | "course_complete" | "streak_days" | "xp_earned",
             criteriaValue: parseInt(formData.get("criteriaValue") as string),
           };
           await createBadge(data);

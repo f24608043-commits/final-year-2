@@ -46,14 +46,17 @@ export async function completeOnboarding(formData: FormData) {
   }
 
   // 2. Update profile with goal and set onboarding_done = true
-  await db
+  const result = await db
     .update(profiles)
     .set({
       dailyGoalMinutes,
       onboardingDone: true,
       updatedAt: new Date(),
     })
-    .where(eq(profiles.id, user.id));
+    .where(eq(profiles.id, user.id))
+    .returning();
+
+  console.log("Onboarding complete - updated profile:", result[0]);
 
   redirect("/path");
 }

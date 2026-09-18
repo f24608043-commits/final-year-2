@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { badges, profiles } from "@/db/schema";
+import { badges, profiles, badgeCriteriaEnum } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
@@ -37,7 +37,7 @@ export async function createBadge(data: {
   name: string;
   description: string;
   icon: string;
-  criteriaType: string;
+  criteriaType: "first_lesson" | "lessons_completed" | "course_complete" | "streak_days" | "xp_earned";
   criteriaValue: number;
 }) {
   await verifyAdmin();
@@ -55,7 +55,7 @@ export async function updateBadge(id: string, data: {
   name: string;
   description: string;
   icon: string;
-  criteriaType: string;
+  criteriaType: "first_lesson" | "lessons_completed" | "course_complete" | "streak_days" | "xp_earned";
   criteriaValue: number;
 }) {
   await verifyAdmin();

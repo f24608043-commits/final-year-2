@@ -1,8 +1,10 @@
 ﻿"use server";
 
-import { createClient } from "@/utils/supabase/server";
 import { db } from "@/db";
 import { profiles } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function signUp(formData: FormData) {
@@ -34,7 +36,7 @@ export async function signUp(formData: FormData) {
     const [existingProfile] = await db
       .select()
       .from(profiles)
-      .where((p) => p.id === data.user.id)
+      .where(eq(profiles.id, data.user!.id))
       .limit(1);
 
     if (!existingProfile) {

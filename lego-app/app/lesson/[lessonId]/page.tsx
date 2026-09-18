@@ -19,6 +19,7 @@ export default async function LessonPage({
 }: {
   params: Promise<{ lessonId: string }>;
 }) {
+  const startTime = Date.now();
   const { lessonId } = await params;
 
   const supabase = await createClient();
@@ -30,62 +31,47 @@ export default async function LessonPage({
     redirect("/sign-in");
   }
 
-  // 1. Check profile onboarding
-  const [profile] = await db
-    .select()
-    .from(profiles)
-    .where(eq(profiles.id, user.id))
-    .limit(1);
+  // 1. Check profile onboarding AND fetch lesson in parallel
+  const [profileResult, lessonResult] = await Promise.all([
+    db.select().from(profiles).where(eq(profiles.id, user.id)).limit(1),
+    db.select().from(lessons).where(eq(lessons.id, lessonId)).limit(1)
+  ]);
+
+  const profile = profileResult[0];
+  const lesson = lessonResult[0];
 
   if (!profile || !profile.onboardingDone) {
     redirect("/onboarding");
   }
 
-  // 2. Fetch the lesson
-  const [lesson] = await db
-    .select()
-    .from(lessons)
-    .where(eq(lessons.id, lessonId))
-    .limit(1);
-
   if (!lesson) {
     notFound();
   }
 
-  // 3. Fetch unit and course
-  const [unit] = await db
-    .select()
-    .from(units)
-    .where(eq(units.id, lesson.unitId))
-    .limit(1);
+  // 2. Fetch unit and course in parallel
+  const [unitResult, courseResult] = await Promise.all([
+    db.select().from(units).where(eq(units.id, lesson.unitId)).limit(1),
+    db.select().from(courses).where(eq(courses.id, lesson.unitId)).limit(1)
+  ]);
+
+  const unit = unitResult[0];
+  const course = courseResult[0];
 
   if (!unit) {
     notFound();
   }
 
-  const [course] = await db
-    .select()
-    .from(courses)
-    .where(eq(courses.id, unit.courseId))
-    .limit(1);
-
   // 4. Server-Side Progression Gating: Verify lesson is unlocked for this learner
-  const courseUnits = await db
-    .select()
-    .from(units)
-    .where(eq(units.courseId, course.id))
-    .orderBy(asc(units.orderIndex));
+  const [courseUnits, allProgress] = await Promise.all([
+    db.select().from(units).where(eq(units.courseId, course.id)).orderBy(asc(units.orderIndex)),
+    db.select().from(userProgress).where(eq(userProgress.userId, user.id))
+  ]);
 
   const allLessons = await db
     .select()
     .from(lessons)
     .where(inArray(lessons.unitId, courseUnits.map((u) => u.id)))
     .orderBy(asc(lessons.orderIndex));
-
-  const allProgress = await db
-    .select()
-    .from(userProgress)
-    .where(eq(userProgress.userId, user.id));
 
   const progressMap = new Map(allProgress.map((p) => [p.lessonId, p.status]));
 
@@ -117,7 +103,7 @@ export default async function LessonPage({
     redirect("/path?error=This lesson is locked. Complete earlier levels first.");
   }
 
-  // 5. Fetch challenges and options
+  // 5. Fetch challenges and options in parallel
   const lessonChallenges = await db
     .select()
     .from(challenges)
@@ -152,6 +138,9 @@ export default async function LessonPage({
     | "completed"
     | "in_progress"
     | undefined;
+
+  const endTime = Date.now();
+  console.log(`[PERF] Lesson page server render time: ${endTime - startTime}ms`);
 
   return (
     <LessonClient

@@ -45,24 +45,24 @@ export default function PracticeClient({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-16">
-      <header className="border-b border-gray-200 bg-white">
+    <div className="min-h-screen bg-[var(--background)] pb-16">
+      <header className="border-b border-[var(--border)] bg-[var(--background-card)]">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
               href={`/lesson/${lessonId}`}
-              className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+              className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--background-secondary)] transition-colors"
             >
               ← Back to Lesson
             </Link>
             <div>
-              <span className="text-xs font-semibold uppercase text-purple-600">
+              <span className="text-xs font-semibold uppercase text-[var(--brand-primary)]">
                 Practice Mode
               </span>
-              <h1 className="text-sm font-bold text-gray-900">{lessonTitle}</h1>
+              <h1 className="text-sm font-bold text-[var(--foreground)]">{lessonTitle}</h1>
             </div>
           </div>
-          <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-bold text-purple-700">
+          <span className="rounded-full bg-[var(--brand-primary-light)] px-3 py-1 text-xs font-bold text-[var(--brand-primary)]">
             Bonus XP Quiz
           </span>
         </div>
@@ -70,19 +70,19 @@ export default function PracticeClient({
 
       <main className="mx-auto max-w-3xl px-4 pt-8">
         {!result ? (
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
-            <div className="mb-6 rounded-xl border border-purple-100 bg-purple-50 p-4">
-              <p className="text-sm font-semibold text-purple-800">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-card)] p-6 shadow-sm sm:p-8">
+            <div className="mb-6 rounded-xl border border-[var(--brand-primary-light)] bg-[var(--brand-primary-light)] p-4">
+              <p className="text-sm font-semibold text-[var(--brand-primary)]">
                 🎯 Practice Quiz — AI-Generated
               </p>
-              <p className="mt-1 text-xs text-purple-600">
+              <p className="mt-1 text-xs text-[var(--brand-primary)]">
                 These questions are freshly generated just for extra practice. Pass to earn
                 bonus XP! (Provider: {provider})
               </p>
             </div>
 
             {errorMsg && (
-              <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+              <div className="mb-4 rounded-lg border border-[var(--error)] bg-[var(--error-light)] p-3 text-sm text-[var(--error)]">
                 {errorMsg}
               </div>
             )}
@@ -91,17 +91,17 @@ export default function PracticeClient({
               {questions.map((q, qIdx) => (
                 <div
                   key={qIdx}
-                  className="rounded-xl border border-gray-200 bg-gray-50/50 p-5"
+                  className="rounded-xl border border-[var(--border)] bg-[var(--background-secondary)] p-5"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--foreground-muted)]">
                       Question {qIdx + 1} of {questions.length}
                     </span>
-                    <span className="text-xs font-medium text-gray-400">
+                    <span className="text-xs font-medium text-[var(--foreground-muted)]">
                       {q.points} {q.points === 1 ? "point" : "points"}
                     </span>
                   </div>
-                  <h3 className="mt-2 text-base font-semibold text-gray-900">
+                  <h3 className="mt-2 text-base font-semibold text-[var(--foreground)]">
                     {q.questionText}
                   </h3>
                   <div className="mt-4 space-y-2">
@@ -114,16 +114,16 @@ export default function PracticeClient({
                           onClick={() => handleSelect(qIdx, oIdx)}
                           className={`flex w-full items-center justify-between rounded-lg border p-3.5 text-left text-sm font-medium transition-all ${
                             isSelected
-                              ? "border-purple-600 bg-purple-50 text-purple-900 ring-2 ring-purple-600"
-                              : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                              ? "border-[var(--brand-primary)] bg-[var(--brand-primary-light)] text-[var(--brand-primary)] ring-2 ring-[var(--brand-primary)]"
+                              : "border-[var(--border)] bg-[var(--background-card)] text-[var(--foreground)] hover:border-[var(--brand-primary)] hover:bg-[var(--brand-primary-light)]"
                           }`}
                         >
                           <span>{opt.optionText}</span>
                           <span
                             className={`flex h-5 w-5 items-center justify-center rounded-full border text-xs ${
                               isSelected
-                                ? "border-purple-600 bg-purple-600 text-white"
-                                : "border-gray-300"
+                                ? "border-[var(--brand-primary)] bg-[var(--brand-primary)] text-white"
+                                : "border-[var(--border)]"
                             }`}
                           >
                             {isSelected ? "✓" : ""}
@@ -136,12 +136,12 @@ export default function PracticeClient({
               ))}
             </div>
 
-            <div className="mt-8 flex justify-end border-t border-gray-100 pt-6">
+            <div className="mt-8 flex justify-end border-t border-[var(--border-light)] pt-6">
               <button
                 type="button"
                 disabled={isPending}
                 onClick={handleSubmit}
-                className="w-full rounded-xl bg-purple-600 px-6 py-3 text-sm font-bold text-white shadow hover:bg-purple-700 disabled:opacity-50 sm:w-auto"
+                className="w-full rounded-xl bg-[var(--brand-primary)] px-6 py-3 text-sm font-bold text-white shadow hover:bg-[var(--brand-primary-dark)] disabled:opacity-50 sm:w-auto transition-colors"
               >
                 {isPending ? "Grading…" : "Submit Practice Quiz →"}
               </button>
@@ -149,29 +149,29 @@ export default function PracticeClient({
           </div>
         ) : (
           /* Result Screen */
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-sm sm:p-10">
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-card)] p-6 text-center shadow-sm sm:p-10">
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full text-4xl shadow-inner">
               {result.passed ? "🌟" : "💪"}
             </div>
 
-            <h2 className="text-2xl font-extrabold text-gray-900">
+            <h2 className="text-2xl font-extrabold text-[var(--foreground)]">
               {result.passed ? "Great Practice!" : "Keep Practicing!"}
             </h2>
 
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-[var(--foreground-secondary)]">
               {result.passed
                 ? `You scored ${result.score}% (${result.correctCount}/${result.totalQuestions} correct).`
                 : `You scored ${result.score}%. You need 50% to earn bonus XP.`}
             </p>
 
-            <div className="my-6 inline-flex items-center gap-6 rounded-2xl border border-gray-200 bg-gray-50 px-6 py-4">
+            <div className="my-6 inline-flex items-center gap-6 rounded-2xl border border-[var(--border)] bg-[var(--background-secondary)] px-6 py-4">
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                <div className="text-xs font-bold uppercase tracking-wider text-[var(--foreground-muted)]">
                   Score
                 </div>
                 <div
                   className={`text-3xl font-extrabold ${
-                    result.passed ? "text-green-600" : "text-amber-600"
+                    result.passed ? "text-[var(--success)]" : "text-[var(--warning)]"
                   }`}
                 >
                   {result.score}%
@@ -179,12 +179,12 @@ export default function PracticeClient({
               </div>
               {result.passed && (
                 <>
-                  <div className="h-8 w-px bg-gray-200" />
+                  <div className="h-8 w-px bg-[var(--border-light)]" />
                   <div>
-                    <div className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    <div className="text-xs font-bold uppercase tracking-wider text-[var(--foreground-muted)]">
                       Bonus XP
                     </div>
-                    <div className="text-3xl font-extrabold text-yellow-600">
+                    <div className="text-3xl font-extrabold text-[var(--warning)]">
                       +{result.bonusXpAwarded}
                     </div>
                   </div>
@@ -192,20 +192,20 @@ export default function PracticeClient({
               )}
             </div>
 
-            <p className="mb-6 text-xs text-gray-400">
+            <p className="mb-6 text-xs text-[var(--foreground-muted)]">
               Your lesson progress is unchanged — practice mode is bonus only.
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
                 href={`/lesson/${lessonId}/practice`}
-                className="rounded-xl bg-purple-600 px-6 py-3 text-sm font-bold text-white shadow hover:bg-purple-700"
+                className="rounded-xl bg-[var(--brand-primary)] px-6 py-3 text-sm font-bold text-white shadow hover:bg-[var(--brand-primary-dark)] transition-colors"
               >
                 Practice Again
               </Link>
               <Link
                 href="/path"
-                className="rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                className="rounded-xl border border-[var(--border)] px-6 py-3 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--background-secondary)] transition-colors"
               >
                 Back to Path
               </Link>

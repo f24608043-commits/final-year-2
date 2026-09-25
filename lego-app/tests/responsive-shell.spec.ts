@@ -22,7 +22,7 @@ test.describe('Responsive Shell - Viewport Tests', () => {
       }
       
       const sidebar = page.locator('[class*="sidebar"], aside').first();
-      const bottomBar = page.locator('[class*="bottom"], nav[class*="mobile"]');
+      const bottomBar = page.locator('nav[class*="mobile"]');
       
       await expect(sidebar).not.toBeVisible();
       await expect(bottomBar).toBeVisible();
@@ -36,7 +36,7 @@ test.describe('Responsive Shell - Viewport Tests', () => {
       await page.waitForURL(/\/(path|onboarding|tutoring\/dashboard)/, { timeout: 15000 });
       
       const sidebar = page.locator('[class*="sidebar"], aside').first();
-      const bottomBar = page.locator('[class*="bottom"], nav[class*="mobile"]');
+      const bottomBar = page.locator('nav[class*="mobile"]');
       
       await expect(sidebar).not.toBeVisible();
       await expect(bottomBar).toBeVisible();
@@ -50,7 +50,7 @@ test.describe('Responsive Shell - Viewport Tests', () => {
       await page.waitForURL(/\/admin/, { timeout: 15000 });
       
       const sidebar = page.locator('[class*="sidebar"], aside').first();
-      const bottomBar = page.locator('[class*="bottom"], nav[class*="mobile"]');
+      const bottomBar = page.locator('nav[class*="mobile"]');
       
       await expect(sidebar).not.toBeVisible();
       await expect(bottomBar).toBeVisible();
@@ -149,7 +149,7 @@ test.describe('Responsive Shell - Viewport Tests', () => {
       }
       
       const sidebar = page.locator('[class*="sidebar"], aside').first();
-      const bottomBar = page.locator('[class*="bottom"], nav[class*="mobile"]');
+      const bottomBar = page.locator('nav[class*="mobile"]');
       
       await expect(sidebar).toBeVisible();
       await expect(bottomBar).not.toBeVisible();
@@ -163,7 +163,7 @@ test.describe('Responsive Shell - Viewport Tests', () => {
       await page.waitForURL(/\/(path|onboarding|tutoring\/dashboard)/, { timeout: 15000 });
       
       const sidebar = page.locator('[class*="sidebar"], aside').first();
-      const bottomBar = page.locator('[class*="bottom"], nav[class*="mobile"]');
+      const bottomBar = page.locator('nav[class*="mobile"]');
       
       await expect(sidebar).toBeVisible();
       await expect(bottomBar).not.toBeVisible();
@@ -177,7 +177,7 @@ test.describe('Responsive Shell - Viewport Tests', () => {
       await page.waitForURL(/\/admin/, { timeout: 15000 });
       
       const sidebar = page.locator('[class*="sidebar"], aside').first();
-      const bottomBar = page.locator('[class*="bottom"], nav[class*="mobile"]');
+      const bottomBar = page.locator('nav[class*="mobile"]');
       
       await expect(sidebar).toBeVisible();
       await expect(bottomBar).not.toBeVisible();

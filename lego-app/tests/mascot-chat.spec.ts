@@ -96,6 +96,7 @@ test.describe('Mascot Chat Feature', () => {
   });
 
   test('rate limit enforcement', async ({ page }) => {
+    test.setTimeout(60000); // Increase timeout to 60s for slow API responses
     await page.waitForTimeout(2000);
     
     // Open chat

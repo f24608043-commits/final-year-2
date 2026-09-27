@@ -326,6 +326,27 @@ export const sessionRequests = pgTable("session_requests", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// ── 20. TUTOR_ENROLLMENTS (Tutor-Student Relationships) ─────
+export const tutorEnrollmentStatusEnum = pgEnum("tutor_enrollment_status", ["pending", "accepted", "rejected", "removed"]);
+
+export const tutorEnrollments = pgTable(
+  "tutor_enrollments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tutorId: uuid("tutor_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    learnerId: uuid("learner_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    status: tutorEnrollmentStatusEnum("status").notNull().default("pending"),
+    message: text("message"), // Optional message from learner
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.tutorId, t.learnerId)]
+);
+
 // ── 17. LIBRARY_VIEWS ─────────────────────────────────────
 export const libraryViews = pgTable("library_views", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -374,6 +395,86 @@ export const notifications = pgTable(
     message: text("message").notNull(),
     data: jsonb("data"),
     isRead: boolean("is_read").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+);
+
+// ── 20. CONVERSATIONS ───────────────────────────────────────
+export const conversationTypeEnum = pgEnum("conversation_type", ["direct", "group"]);
+
+export const conversations = pgTable(
+  "conversations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    type: conversationTypeEnum("type").notNull().default("direct"),
+    title: text("title"),
+    createdBy: uuid("created_by").notNull().references(() => profiles.id, { onDelete: "cascade" }),
+    directKey: text("direct_key").unique(), // For direct conversations, ensures one thread per pair (concatenated UUIDs)
+    lastMessageAt: timestamp("last_message_at", { withTimezone: true }),
+    jitsiRoomId: text("jitsi_room_id"), // For group live class rooms
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+);
+
+// ── 21. CONVERSATION_MEMBERS ───────────────────────────────
+export const conversationMembers = pgTable(
+  "conversation_members",
+  {
+    conversationId: uuid("conversation_id")
+      .notNull()
+      .references(() => conversations.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    role: text("role").notNull().default("member"), // "admin" or "member"
+    lastReadAt: timestamp("last_read_at", { withTimezone: true }),
+    joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.conversationId, t.userId)]
+);
+
+// ── 22. MESSAGES ────────────────────────────────────────────
+export const messages = pgTable("messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  conversationId: uuid("conversation_id")
+    .notNull()
+    .references(() => conversations.id, { onDelete: "cascade" }),
+  senderId: uuid("sender_id")
+    .notNull()
+    .references(() => profiles.id, { onDelete: "cascade" }),
+  body: text("body").notNull(), // Max 2000 chars enforced by DB check
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── 23. BLOCKS ──────────────────────────────────────────────
+export const blocks = pgTable(
+  "blocks",
+  {
+    blockerId: uuid("blocker_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    blockedId: uuid("blocked_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [unique().on(t.blockerId, t.blockedId)]
+);
+
+// ── 24. MESSAGE_REPORTS ─────────────────────────────────────
+export const messageReports = pgTable(
+  "message_reports",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    messageId: uuid("message_id")
+      .notNull()
+      .references(() => messages.id, { onDelete: "cascade" }),
+    reporterId: uuid("reporter_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    reason: text("reason").notNull(),
+    status: text("status").notNull().default("pending"), // "pending", "reviewed", "dismissed"
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
 );
